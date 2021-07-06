@@ -38,4 +38,4 @@ jobs:
         uses: docker/build-push-action@v2.6.1
         with:
           context: FoodPicker
-          tags: evanlihou/foodpicker:latest
+          tags: ghcr.io/evanlihou/foodpicker:latest
