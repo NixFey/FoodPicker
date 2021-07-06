@@ -1,0 +1,18 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@model FoodPicker.Controllers.AuthController.LoginViewModel
+@inject UserManager<IdentityUser> UserManager
+
+<form method="post" asp-action="Login">
+    @{
+        var users = await UserManager.Users.ToListAsync();
+    }
+    <div class="mb-3">
+        <label asp-for="UserId"></label>
+        <select asp-for="UserId" asp-items="@users.Select(x => new SelectListItem(x.UserName, x.Id))" class="form-control">
+            <option value="null">-- Select --</option>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

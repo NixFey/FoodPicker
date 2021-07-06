@@ -1,0 +1,45 @@
+@model MealWeek
+
+@{
+    ViewBag.Title = "Week";
+}
+
+<h2>@(Model.Id == 0 ? "Create" : "Edit") Week</h2>
+<form asp-route="@(Model.Id == 0 ? "WeekCreate" : "WeekEdit")" method="post" class="mb-3">
+    <div class="mb-3">
+        <label asp-for="DeliveryDate"></label>
+        <input asp-for="DeliveryDate" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="MealWeekStatus"></label>
+        <select asp-for="MealWeekStatus" asp-items="@Html.GetEnumSelectList<MealWeekStatus>()" >
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@if (Model.Id != 0)
+{
+    @if (Model.MealWeekStatus == MealWeekStatus.Future)
+    {
+        <form asp-action="GenerateMeals" asp-route-id="@Model.Id" method="post" class="mb-3">
+            <button type="submit" class="btn btn-secondary">Generate Meals</button>
+        </form>
+    }
+
+    <hr />
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        @foreach (var meal in Model.Meals)
+        {
+            <div class="col">
+                <div class="card">
+                    <img src="@meal.ImageUrl" class="card-img-top" alt="Meal Image">
+                    <div class="card-body">
+                        <h5 class="card-title">@meal.Name</h5>
+                        <p class="card-text">@meal.Description</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

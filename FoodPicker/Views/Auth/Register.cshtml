@@ -1,0 +1,10 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@model FoodPicker.Controllers.AuthController.RegisterViewModel
+@inject UserManager<IdentityUser> UserManager
+
+<form method="post" asp-action="Register">
+    
+    <label asp-for="Username"></label>
+    <input asp-for="Username" />
+</form>

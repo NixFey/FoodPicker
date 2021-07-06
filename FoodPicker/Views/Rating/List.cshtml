@@ -1,0 +1,73 @@
+@using Humanizer
+@model FoodPicker.Controllers.RatingController.ListViewModel
+
+@{
+    ViewBag.Title = "Rating List";
+}
+
+<h2>Ratings</h2>
+
+<h3>Meals Missing Rating</h3>
+@if (Model.MealsMissingRating.Any())
+{
+    <table class="table table-striped my-3">
+        <thead>
+        <tr>
+            <th>Meal Name</th>
+            <th>Week</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var meal in Model.MealsMissingRating.OrderBy(x => x.MealWeek.DeliveryDate))
+        {
+            <tr>
+                <td>@meal.Name</td>
+                <td>@meal.MealWeek.DeliveryDate.ToShortDateString()</td>
+                <td>
+                    <a asp-route="RatingCreate" asp-route-mealId="@meal.Id">Edit Rating</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <span>None</span>
+}
+
+<h3>Meal Ratings</h3>
+@if (Model.MealRatings.Any())
+{
+<table class="table table-striped my-3">
+<thead>
+<tr>
+    <th>Meal Name</th>
+    <th>Week</th>
+    <th>Rating</th>
+    <th>Comment</th>
+    <th>Actions</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var rating in Model.MealRatings.OrderBy(x => x.Meal.MealWeek.DeliveryDate))
+{
+    <tr>
+        <td>@rating.Meal.Name</td>
+        <td>@rating.Meal.MealWeek.DeliveryDate.ToShortDateString()</td>
+        <td>@rating.Rating/5
+        </td>
+        <td>@rating.RatingComment</td>
+        <td>
+            <a asp-route="RatingEdit" asp-route-id="@rating.Id">Edit Rating</a>
+        </td>
+    </tr>
+}
+</tbody>
+</table>
+}
+else
+{
+    <span>None</span>
+}
