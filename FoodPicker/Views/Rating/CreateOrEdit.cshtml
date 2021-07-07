@@ -28,7 +28,7 @@
     <div class="mb-3">
         <label asp-for="Rating"></label>
         <input asp-for="Rating" type="number" class="form-control"/>
-        <div class="form-text">Ratings are between 1 and 4.</div>
+        <div class="form-text">Ratings are between 1 and @MealRating.MaxRating.</div>
     </div>
     <div class="mb-3">
         <label asp-for="RatingComment"></label>
