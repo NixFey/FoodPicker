@@ -255,5 +255,15 @@ namespace FoodPicker.Controllers
 
             return RedirectToAction("ViewResults", new {weekId});
         }
+
+        [HttpGet("MealDetailsModal/{mealId:int}")]
+        public async Task<ActionResult> MealDetailsModal(int? mealId)
+        {
+            if (mealId is 0 or null) return BadRequest();
+            var meal = await _db.Meals.FirstOrDefaultAsync(x => x.Id == mealId);
+            if (meal == null) return BadRequest();
+
+            return PartialView("_MealDetailsModal", meal);
+        }
     }
 }

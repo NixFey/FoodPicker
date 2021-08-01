@@ -39,7 +39,7 @@
             @foreach (var meal in Model.MealResults.OrderByDescending(x => x.Score))
             {
                 <tr>
-                    <td>@meal.Meal.Name</td>
+                    <td><a onclick="loadMealDetails(@meal.Meal.Id)" href="javascript:false">@meal.Meal.Name</a></td>
                     @foreach (var user in Model.ParticipatingUsers)
                     {
                         var vote = meal.Votes.FirstOrDefault(x => x.UserId == user.Id);
@@ -66,9 +66,46 @@
             <button name="action" value="saveLock" type="submit" class="btn btn-primary">Save and Lock Week</button>
         }
     </form>
+    
+    <div class="modal" id="mealDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Meal Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 }
 else
 {
     <text>No meals found.</text>
+}
+
+@section Scripts
+{
+    <script>
+    const mealDetailsModalEl = document.getElementById("mealDetailsModal");
+    var mealDetailsModal = new bootstrap.Modal(mealDetailsModalEl);
+    const modalContent = mealDetailsModalEl.querySelector(".modal-body");
+    const loadingContent = "<p>Loading...</p>";
+    
+    async function loadMealDetails(mealId) {
+        modalContent.innerHTML = loadingContent;
+        mealDetailsModal.show();
+        
+        const fetchResult = await fetch(`@Url.Action("MealDetailsModal")/${mealId}`);
+        
+        if (fetchResult.ok) {
+            modalContent.innerHTML = await fetchResult.text();
+        } else {
+            modalContent.innerHTML = `<p>Unable to fetch meal info: ${fetchResult.statusText}</p>`; 
+        }
+    }
+    </script>
 }
     

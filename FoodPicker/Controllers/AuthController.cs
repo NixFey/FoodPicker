@@ -34,7 +34,7 @@ namespace FoodPicker.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Login([FromForm] LoginViewModel model)
+        public async Task<IActionResult> Login([FromForm] LoginViewModel model, [FromQuery] string returnUrl)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
             await _signInManager.SignInAsync(user, new AuthenticationProperties
@@ -42,6 +42,10 @@ namespace FoodPicker.Controllers
                 IsPersistent = true
             });
 
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
             return RedirectToAction("Index", "Home");
         }
         
