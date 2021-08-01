@@ -20,6 +20,10 @@
                         <div class="card-body">
                             <h5 class="card-title">@meal.Name</h5>
                             <p class="card-text">@meal.Description</p>
+                            @if (!string.IsNullOrEmpty(meal.Tags))
+                            {
+                                <span class="badge rounded-pill bg-primary">@meal.Tags</span>
+                            }
                         </div>
                         <div class="card-footer">
                             <input type="hidden" asp-for="@Model.UserMealVotes[i].MealId" value="@meal.Id"/>

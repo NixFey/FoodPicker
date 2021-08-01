@@ -3,3 +3,7 @@
 <img src="@Model.ImageUrl" alt="Photo of @Model.Name" style="width: 100%" />
 <h4>@Model.Name</h4>
 <p>@Model.Description</p>
+@if (!string.IsNullOrEmpty(Model.Tags))
+{
+    <span class="badge rounded-pill bg-primary">@Model.Tags</span>
+}

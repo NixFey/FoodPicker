@@ -104,12 +104,16 @@ namespace FoodPicker.Controllers
                 var description = mealTitle.ParentElement?.ParentElement?.QuerySelector("div+span")?.TextContent;
                 var imageUrl = mealTitle.ParentElement?.ParentElement?.ParentElement?.ParentElement?.QuerySelector("img")?
                     .GetAttribute("src");
+                // <h4>.parentElement.parentElement.querySelectorAll('[role=button]>span')
+                var majorTags = mealTitle.ParentElement?.ParentElement?.QuerySelector("[role='button']")?.TextContent;
+                
                 meals.Add(new Meal
                 {
                     MealWeekId = week.Id,
                     Name = title,
                     Description = description,
-                    ImageUrl = imageUrl
+                    ImageUrl = imageUrl,
+                    Tags = majorTags
                 });
             }
 

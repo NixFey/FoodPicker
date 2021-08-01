@@ -35,7 +35,7 @@ namespace FoodPicker.Models
             get
             {
                 var subtractedDelivery = DeliveryDate.AddDays(-5);
-                var pacificDeadline = new DateTime
+                var deadline = new DateTime
                 (
                     year: subtractedDelivery.Year,
                     month: subtractedDelivery.Month,
@@ -44,8 +44,6 @@ namespace FoodPicker.Models
                     minute: 59,
                     second: 00
                 );
-                var deadline = TimeZoneInfo.ConvertTime(pacificDeadline,
-                    TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"), TimeZoneInfo.Local);
                 return deadline;
             }
         }
