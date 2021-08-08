@@ -13,7 +13,7 @@ namespace FoodPicker.Models
         public Meal Meal { get; set; }
         
         public string UserId { get; set; }
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
         public MealVoteOption? VoteOption { get; set; }
         public string Comment { get; set; }
     }

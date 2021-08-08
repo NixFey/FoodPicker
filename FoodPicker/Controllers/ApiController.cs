@@ -52,7 +52,7 @@ namespace FoodPicker.Controllers
             var fullyVotedUsernames =
                 users.Where(x => fullyVotedUserIds.Contains(x.Id)).Select(x => x.UserName).ToList();
             
-            var pendingVoteUserNames = users.Where(x => !fullyVotedUserIds.Contains(x.Id)).Select(x => x.UserName).ToList();
+            var pendingVoteUserNames = users.Where(x => !fullyVotedUserIds.Contains(x.Id) && x.VoteIsRequired == true).Select(x => x.UserName).ToList();
 
             return new NextWeekResult
             {

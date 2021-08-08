@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using FoodPicker.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,10 @@ namespace FoodPicker.Controllers
     public class AuthController : Controller
     {
         private readonly ILogger<AuthController> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<AuthController> logger)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AuthController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -64,7 +65,7 @@ namespace FoodPicker.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] RegisterViewModel model)
         {
-            var createResult = await _userManager.CreateAsync(new IdentityUser
+            var createResult = await _userManager.CreateAsync(new ApplicationUser()
             {
                 UserName = model.Username
             });

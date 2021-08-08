@@ -18,10 +18,10 @@ namespace FoodPicker.Controllers
     public class RatingController : Controller
     {
         private readonly ILogger<RatingController> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _db;
 
-        public RatingController(UserManager<IdentityUser> userManager, ILogger<RatingController> logger, ApplicationDbContext db)
+        public RatingController(UserManager<ApplicationUser> userManager, ILogger<RatingController> logger, ApplicationDbContext db)
         {
             _userManager = userManager;
             _logger = logger;

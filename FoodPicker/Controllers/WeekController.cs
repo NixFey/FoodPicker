@@ -18,10 +18,10 @@ namespace FoodPicker.Controllers
     public class WeekController : Controller
     {
         private readonly ILogger<WeekController> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _db;
 
-        public WeekController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<WeekController> logger, ApplicationDbContext db)
+        public WeekController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<WeekController> logger, ApplicationDbContext db)
         {
             _userManager = userManager;
             _logger = logger;
@@ -172,7 +172,7 @@ namespace FoodPicker.Controllers
         public class ViewResultsViewModel
         {
             public MealWeek Week { get; set; }
-            public List<IdentityUser> ParticipatingUsers { get; set; }
+            public List<ApplicationUser> ParticipatingUsers { get; set; }
 
             public List<MealResult> MealResults { get; set; } = new List<MealResult>();
             public Dictionary<int, bool> MealsSelected { get; set; } = new Dictionary<int, bool>();
