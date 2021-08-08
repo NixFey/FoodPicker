@@ -51,6 +51,10 @@ namespace FoodPicker
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                
+                // TODO TEMPORARY FIX
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
             });
         }
 
@@ -62,6 +66,7 @@ namespace FoodPicker
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
                 app.UseForwardedHeaders();
+                app.UseHttpsRedirection();
 
             // }
             // else
