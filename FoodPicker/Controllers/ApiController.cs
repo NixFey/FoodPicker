@@ -32,7 +32,7 @@ namespace FoodPicker.Controllers
         public async Task<NextWeekResult> NextWeek()
         {
             // TODO Clean me up
-            var week = (await _db.MealWeeks.OrderByDescending(x => x.DeliveryDate).Include(x => x.Meals).ToListAsync())
+            var week = (await _db.MealWeeks.OrderBy(x => x.DeliveryDate).Include(x => x.Meals).ToListAsync())
                 .FirstOrDefault(x =>
                     x.MealWeekStatus == MealWeekStatus.Active && x.OrderDeadline > DateTime.Now);
 
