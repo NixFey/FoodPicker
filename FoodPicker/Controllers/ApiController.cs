@@ -23,6 +23,7 @@ namespace FoodPicker.Controllers
 
         public class NextWeekResult
         {
+            public string WeekStatus { get; set; }
             public DateTime OrderDeadline { get; set; }
             public List<string> PendingVotes { get; set; }
             public List<string> FullyVoted { get; set; }
@@ -31,10 +32,8 @@ namespace FoodPicker.Controllers
         [HttpGet("[action]")]
         public async Task<NextWeekResult> NextWeek()
         {
-            // TODO Clean me up
             var week = (await _db.MealWeeks.OrderBy(x => x.DeliveryDate).Include(x => x.Meals).ToListAsync())
-                .FirstOrDefault(x =>
-                    x.MealWeekStatus == MealWeekStatus.Active && x.OrderDeadline > DateTime.Now);
+                .FirstOrDefault(x => x.OrderDeadline > DateTime.Now && x.OrderDeadline < DateTime.Now.AddDays(7));
 
             if (week == null) return null;
 
@@ -56,6 +55,7 @@ namespace FoodPicker.Controllers
 
             return new NextWeekResult
             {
+                WeekStatus = week.MealWeekStatus.ToString(),
                 OrderDeadline = week.OrderDeadline,
                 PendingVotes = pendingVoteUserNames,
                 FullyVoted = fullyVotedUsernames
