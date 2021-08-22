@@ -132,6 +132,7 @@ namespace FoodPicker.Controllers
         {
             public MealWeek MealWeek { get; set; }
             public List<MealVote> UserMealVotes { get; set; }
+            public ILookup<int, MealRating> PreviousRatings { get; set; }
         }
         [HttpGet("Vote/{id:int}")]
         public async Task<IActionResult> Vote(int? id)
@@ -139,13 +140,18 @@ namespace FoodPicker.Controllers
             var model = await _db.MealWeeks.Include(x => x.Meals).FirstOrDefaultAsync(x => x.Id == id);
             var weekVotes = await _db.MealVotes
                 .Where(x => x.UserId == _userManager.GetUserId(User) && x.Meal.MealWeekId == id).ToListAsync();
+            var previousRatings = _db.MealRatings.Include(x => x.Meal)
+                .Where(x => model.Meals.Select(y => y.Name).Contains(x.Meal.Name)).AsEnumerable();
+            var ratingLookup = previousRatings.ToLookup(x => model.Meals.Single(y => y.Name == x.Meal.Name).Id);
+            
             return View(new MealVoteViewModel
             {
                 MealWeek = model,
                 UserMealVotes = model.Meals.Select(x => weekVotes.FirstOrDefault(y => y.MealId == x.Id) ?? new MealVote
                 {
                     MealId = x.Id
-                }).ToList()
+                }).ToList(),
+                PreviousRatings = ratingLookup
             });
         } 
         
