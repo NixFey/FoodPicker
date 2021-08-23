@@ -266,14 +266,27 @@ namespace FoodPicker.Controllers
             return RedirectToAction("ViewResults", new {weekId});
         }
 
+        public class MealDetailsViewModel
+        {
+            public Meal Meal { get; set; }
+            public List<MealRating> PreviousRatings { get; set; }
+        }
+
         [HttpGet("MealDetailsModal/{mealId:int}")]
         public async Task<ActionResult> MealDetailsModal(int? mealId)
         {
             if (mealId is 0 or null) return BadRequest();
             var meal = await _db.Meals.FirstOrDefaultAsync(x => x.Id == mealId);
             if (meal == null) return BadRequest();
+            
+            var previousRatings = _db.MealRatings.Include(x => x.Meal)
+                .Where(x => meal.Name == x.Meal.Name).ToList();
 
-            return PartialView("_MealDetailsModal", meal);
+            return PartialView("_MealDetailsModal", new MealDetailsViewModel
+            {
+                Meal = meal,
+                PreviousRatings = previousRatings 
+            });
         }
     }
 }
