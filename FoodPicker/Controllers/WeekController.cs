@@ -27,12 +27,35 @@ namespace FoodPicker.Controllers
             _logger = logger;
             _db = db;
         }
+
+        public class WeekListViewModel
+        {
+            public MealWeek MealWeek { get; set; }
+            public bool CurrentUserVotingComplete { get; set; }
+        }
         
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var mealWeeks = await _db.MealWeeks.ToListAsync();
-            return View("List", mealWeeks);
+            
+            var viewModel = new List<WeekListViewModel>();
+            
+            foreach (var mealWeek in mealWeeks)
+            {
+                var numMealVotes = await _db.MealVotes.Where(x =>
+                    x.Meal.MealWeekId == mealWeek.Id && x.UserId == _userManager.GetUserId(User) &&
+                    x.VoteOption != null).CountAsync();
+
+                var numMeals = await _db.Meals.CountAsync(x => x.MealWeekId == mealWeek.Id);
+                
+                viewModel.Add(new WeekListViewModel
+                {
+                    MealWeek = mealWeek,
+                    CurrentUserVotingComplete = numMealVotes >= numMeals
+                });
+            }
+            return View("List", viewModel);
         } 
         
         [HttpGet]

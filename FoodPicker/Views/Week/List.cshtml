@@ -1,5 +1,5 @@
 @using Humanizer
-@model List<MealWeek>
+@model List<FoodPicker.Controllers.WeekController.WeekListViewModel>
 
 @{
     ViewBag.Title = "Week List";
@@ -19,23 +19,25 @@
             <th>Delivery Date</th>
             <th>Order Deadline</th>
             <th>Week Status</th>
+            <th>My Votes Complete?</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var week in Model.Where(x => x.MealWeekStatus == MealWeekStatus.Active).OrderBy(x => x.DeliveryDate))
+        @foreach (var week in Model.Where(x => x.MealWeek.MealWeekStatus == MealWeekStatus.Active).OrderBy(x => x.MealWeek.DeliveryDate))
         {
             <tr>
-                <td>@week.DeliveryDate.ToShortDateString()</td>
-                <td>@week.OrderDeadline.Humanize()</td>
-                <td>@Html.DisplayFor(x => week.MealWeekStatus)</td>
+                <td>@week.MealWeek.DeliveryDate.ToShortDateString()</td>
+                <td>@week.MealWeek.OrderDeadline.Humanize()</td>
+                <td>@Html.DisplayFor(x => week.MealWeek.MealWeekStatus)</td>
+                <td>@(week.CurrentUserVotingComplete ? "Yes" : "No")</td>
                 <td>
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-route="WeekEdit" asp-route-id="@week.Id">Edit</a>
+                        <a asp-route="WeekEdit" asp-route-id="@week.MealWeek.Id">Edit</a>
                     }
-                    <a asp-action="Vote" asp-route-id="@week.Id">Vote</a>
-                    <a asp-action="ViewResults" asp-route-weekId="@week.Id">View Results</a>
+                    <a asp-action="Vote" asp-route-id="@week.MealWeek.Id">Vote</a>
+                    <a asp-action="ViewResults" asp-route-weekId="@week.MealWeek.Id">View Results</a>
                 </td>
             </tr>
         }
@@ -53,17 +55,17 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var week in Model.Where(x => x.MealWeekStatus != MealWeekStatus.Active).OrderByDescending(x => x.DeliveryDate))
+        @foreach (var week in Model.Where(x => x.MealWeek.MealWeekStatus != MealWeekStatus.Active).OrderByDescending(x => x.MealWeek.DeliveryDate))
         {
             <tr>
-                <td>@week.DeliveryDate.ToShortDateString()</td>
-                <td>@week.OrderDeadline.Humanize()</td>
-                <td>@Html.DisplayFor(x => week.MealWeekStatus)</td>
+                <td>@week.MealWeek.DeliveryDate.ToShortDateString()</td>
+                <td>@week.MealWeek.OrderDeadline.Humanize()</td>
+                <td>@Html.DisplayFor(x => week.MealWeek.MealWeekStatus)</td>
                 <td>
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-route="WeekEdit" asp-route-id="@week.Id">Edit</a>
-                    }                    <a asp-action="ViewResults" asp-route-weekId="@week.Id">View Results</a>
+                        <a asp-route="WeekEdit" asp-route-id="@week.MealWeek.Id">Edit</a>
+                    }                    <a asp-action="ViewResults" asp-route-weekId="@week.MealWeek.Id">View Results</a>
                 </td>
             </tr>
         }
