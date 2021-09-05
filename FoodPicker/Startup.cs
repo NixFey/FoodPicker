@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -47,34 +48,35 @@ namespace FoodPicker
             });
             services.AddControllersWithViews();
             
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("AccessInternalAdminAreas", pol =>
+                {
+                    pol.RequireRole("Admin");
+                    pol.RequireClaim("PasswordLogin", "true");
+                });
+            });
+            
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 
-                // TODO TEMPORARY FIX
-                options.KnownNetworks.Clear();
-                options.KnownProxies.Clear();
+                foreach (var proxy in Configuration.GetSection("KnownProxies").Get<string[]>())
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(proxy));
+                }
             });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
         {
-            // if (env.IsDevelopment())
-            // {
-                app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
-                app.UseForwardedHeaders();
-                app.UseHttpsRedirection();
-
-            // }
-            // else
-            // {
-            //     app.UseExceptionHandler("/Home/Error");
-            //     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            //     app.UseHsts();
-            // }
+            app.UseDeveloperExceptionPage();
+            app.UseMigrationsEndPoint();
+            app.UseForwardedHeaders();
+            app.UseHttpsRedirection();
 
             app.UseStaticFiles();
 
@@ -90,6 +92,8 @@ namespace FoodPicker
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+            
+            dbContext.Database.Migrate();
         }
     }
 }

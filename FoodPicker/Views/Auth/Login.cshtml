@@ -9,10 +9,38 @@
     }
     <div class="mb-3">
         <label asp-for="UserId"></label>
-        <select asp-for="UserId" asp-items="@users.Select(x => new SelectListItem(x.UserName, x.Id))" class="form-control">
+        <select asp-for="UserId" class="form-control" id="user-select">
             <option value="null">-- Select --</option>
+            @foreach (var user in users)
+            {
+                <option value="@user.Id" data-isadmin="@(await _userManager.IsInRoleAsync(user, "Admin"))">@user.UserName</option>
+            }
         </select>
     </div>
     
+    <div class="mb-3 d-none" id="password-field">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
+        <div class="form-text">Enter your password to access internal admin areas. Not required.</div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+@section Scripts {
+    <script>
+    var selectEl = document.getElementById("user-select");
+    var passwordEl = document.getElementById("password-field");
+    
+    selectEl.addEventListener("change", function (e) {
+        if (selectEl.selectedOptions[0].dataset["isadmin"] === "True") {
+            passwordEl.classList.remove("d-none");
+        } else {
+            passwordEl.classList.add("d-none");
+        }
+    });
+    
+    selectEl.dispatchEvent(new Event("change"));
+    </script>
+}

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FoodPicker.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -26,6 +27,9 @@ namespace FoodPicker.Controllers
             [Required]
             [Display(Name="User")]
             public string UserId { get; set; }
+            
+            [Display(Name="Password")]
+            public string Password { get; set; }
         }
 
         [HttpGet]
@@ -38,11 +42,29 @@ namespace FoodPicker.Controllers
         public async Task<IActionResult> Login([FromForm] LoginViewModel model, [FromQuery] string returnUrl)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
-            await _signInManager.SignInAsync(user, new AuthenticationProperties
+            if (!string.IsNullOrEmpty(model.Password) && await _userManager.IsInRoleAsync(user, "Admin"))
             {
-                IsPersistent = true
-            });
-
+                // Password login
+                if (await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    await _signInManager.SignInWithClaimsAsync(user, false,
+                            new[] { new Claim("PasswordLogin", "true") });
+                }
+                else
+                {
+                    ModelState.AddModelError("Password", "Invalid password");
+                    return View();
+                }
+            }
+            else
+            {
+                // Normal login
+                await _signInManager.SignInAsync(user, new AuthenticationProperties
+                {
+                    IsPersistent = true
+                });
+            }
+            
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 return LocalRedirect(returnUrl);

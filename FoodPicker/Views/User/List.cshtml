@@ -1,0 +1,42 @@
+@using Microsoft.AspNetCore.Identity
+@model List<ApplicationUser>
+@inject UserManager<ApplicationUser> _userManager
+
+@{
+    ViewBag.Title = "User List";
+}
+
+<h2>Users</h2>
+
+@if (Model.Any())
+{
+    <a asp-route="UserCreate">Create User</a>
+    <table class="table table-striped my-3">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Is Admin?</th>
+            <th>Vote Required?</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@((await _userManager.IsInRoleAsync(user, "Admin")) ? "Yes" : "No")</td>
+                <td>@(user.VoteIsRequired ? "Yes" : "No")</td>
+                <td>
+                   <a asp-route="UserEdit" asp-route-id="@user.Id">Edit</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <text>No users found. <a asp-route="UserCreate">Create one?</a></text>
+}
+
