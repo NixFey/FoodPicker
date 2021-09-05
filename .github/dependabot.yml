@@ -9,5 +9,5 @@ updates:
     directory: "/FoodPicker" # Location of package manifests
     schedule:
       interval: "daily"
-    reviewers:
+    assignees:
       - "evanlihou"
