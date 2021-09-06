@@ -12,7 +12,7 @@ namespace FoodPicker.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public int Year {
+        private int Year {
             get
             {
                 var cal = CultureInfo.CurrentCulture.Calendar;
@@ -20,7 +20,7 @@ namespace FoodPicker.Models
             }
         }
         [Required]
-        public int WeekNo {
+        private int WeekNo {
             get
             {
                 var cal = CultureInfo.CurrentCulture.Calendar;
