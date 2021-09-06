@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using FoodPicker.Data;
 using FoodPicker.Enums;
 using FoodPicker.Models;
+using FoodPicker.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -76,10 +78,12 @@ namespace FoodPicker
                     opt.HttpsPort = 443;
                 });
             }
+            
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext dbContext, RoleManager<IdentityRole> roleManager)
         {
             app.UseDeveloperExceptionPage();
             app.UseMigrationsEndPoint();
@@ -90,8 +94,12 @@ namespace FoodPicker
 
             app.UseRouting();
 
+            dbContext.Database.Migrate();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            RoleDataInitializer.SeedData(roleManager).Wait();
 
             app.UseEndpoints(endpoints =>
             {
@@ -100,8 +108,6 @@ namespace FoodPicker
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-            
-            dbContext.Database.Migrate();
         }
     }
 }

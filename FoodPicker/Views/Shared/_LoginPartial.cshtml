@@ -1,10 +1,28 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Authorization
+@using FoodPicker.Enums
+@inject SignInManager<ApplicationUser> _signInManager
+@inject UserManager<ApplicationUser> _userManager
+@inject IAuthorizationService _authorizationService;
 
 <ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User) && User.Identity != null)
+    @if (_signInManager.IsSignedIn(User) && User.Identity != null)
     {
+        @if (User.IsInRole("Admin"))
+        {
+            <li class="nav-item" style="display: flex; align-items: center;">
+                <span class="badge bg-primary">
+                @if ((await _authorizationService.AuthorizeAsync(User, AuthorizationPolicies.AccessInternalAdminAreas)).Succeeded)
+                {
+                    <text>Internal Admin Mode</text>
+                }
+                else
+                {
+                    <text>User Mode</text>
+                }
+                </span>
+            </li>
+        }
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
         </li>

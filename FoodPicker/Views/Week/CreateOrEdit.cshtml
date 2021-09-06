@@ -1,5 +1,4 @@
 @using Microsoft.AspNetCore.Authorization
-@using FoodPicker.Enums
 @model MealWeek
 @inject IAuthorizationService _authorizationService;
 
@@ -30,10 +29,9 @@
         </form>
     }
     
-    @if ((await _authorizationService.AuthorizeAsync(User, AuthorizationPolicies.AccessInternalAdminAreas)).Succeeded)
-    {
+    <internal-admin>
         <button type="button" class="btn btn-danger" id="delete-week-button">Delete Week</button>
-    }
+    </internal-admin>
 
     <hr />
     <div class="row row-cols-1 row-cols-md-4 g-4">

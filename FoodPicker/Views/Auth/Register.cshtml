@@ -1,10 +1,17 @@
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.EntityFrameworkCore
 @model FoodPicker.Controllers.AuthController.RegisterViewModel
-@inject UserManager<ApplicationUser> UserManager
 
+
+<p>This form is to register a first user in the system. This user will be automatically given admin access.</p>
 <form method="post" asp-action="Register">
-    
-    <label asp-for="Username"></label>
-    <input asp-for="Username" />
+    <div class="mb-3">
+        <label asp-for="Username"></label>
+        <input asp-for="Username" class="form-control" />
+        <span asp-validation-for="Username"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>

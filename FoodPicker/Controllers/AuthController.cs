@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FoodPicker.Models;
@@ -76,30 +77,49 @@ namespace FoodPicker.Controllers
         {
             [Required]
             public string Username { get; set; }
+            
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
         }
         
         [HttpGet]
         public IActionResult Register()
         {
+            if (_userManager.Users.Any()) return Unauthorized();
+
             return View();
         }
         
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] RegisterViewModel model)
         {
+            if (_userManager.Users.Any()) return Unauthorized();
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             var createResult = await _userManager.CreateAsync(new ApplicationUser()
             {
-                UserName = model.Username
-            });
+                UserName = model.Username,
+                VoteIsRequired = true,
+            }, model.Password);
             if (!createResult.Succeeded)
             {
+                foreach (var identityError in createResult.Errors)
+                {
+                    ModelState.AddModelError("Password", identityError.Description);
+                    return View();
+                }
+
                 _logger.LogError("Error creating user: {Error}", string.Join(", ", createResult.Errors));
             }
+            
             var user = await _userManager.FindByNameAsync(model.Username);
-            await _signInManager.SignInAsync(user, new AuthenticationProperties
-            {
-                IsPersistent = true
-            });
+            await _userManager.AddPasswordAsync(user, model.Password);
+            await _userManager.AddToRoleAsync(user, "Admin");
+
+            await _signInManager.SignInWithClaimsAsync(user, true, new[] { new Claim("PasswordLogin", "true") });
 
             return RedirectToAction("Index", "Home");
         }
