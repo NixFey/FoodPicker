@@ -2,9 +2,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FoodPicker.Web.Models
+namespace FoodPicker.Infrastructure.Models
 {
-    public class MealRating
+    public class MealRating : BaseEntity
     {
         public const int MaxRating = 4;
         public int Id { get; set; }

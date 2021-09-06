@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker.Web", "FoodPicke
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker.Infrastructure", "FoodPicker.Infrastructure\FoodPicker.Infrastructure.csproj", "{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker.Migrations", "FoodPicker.Migrations\FoodPicker.Migrations.csproj", "{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,4 @@
-using System;
-
-namespace FoodPicker.Web.Models
+namespace FoodPicker.Infrastructure.Models
 {
     public class ErrorViewModel
     {

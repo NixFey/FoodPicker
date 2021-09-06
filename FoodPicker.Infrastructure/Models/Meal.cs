@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FoodPicker.Web.Models
+namespace FoodPicker.Infrastructure.Models
 {
-    public class Meal
+    public class Meal : BaseEntity
     {
         public int Id { get; set; }
         public int MealWeekId { get; set; }

@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FoodPicker.Web.Models;
+using FoodPicker.Infrastructure.Models;
 using FoodPicker.Web.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

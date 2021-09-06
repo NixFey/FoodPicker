@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FoodPicker.Infrastructure.Entities
+namespace FoodPicker.Infrastructure.Models
 {
     public class MealVote : BaseEntity
     {

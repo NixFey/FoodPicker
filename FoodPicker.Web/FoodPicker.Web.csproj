@@ -7,12 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Update="app.db">
-          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AngleSharp" Version="0.16.0" />
         <PackageReference Include="Humanizer.Core" Version="2.11.10" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.9" />
@@ -24,11 +18,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Data" />
+      <Folder Include="Models" />
       <Folder Include="wwwroot\lib\bootstrap" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\FoodPicker.Infrastructure\FoodPicker.Infrastructure.csproj" />
+      <ProjectReference Include="..\FoodPicker.Migrations\FoodPicker.Migrations.csproj" />
     </ItemGroup>
 
 </Project>

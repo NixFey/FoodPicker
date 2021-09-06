@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
-namespace FoodPicker.Web.Models
+namespace FoodPicker.Infrastructure.Models
 {
-    public class MealWeek
+    public class MealWeek : BaseEntity
     {
         [Key]
         public int Id { get; set; }

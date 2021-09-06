@@ -1,4 +1,4 @@
-namespace FoodPicker.Infrastructure.Entities
+namespace FoodPicker.Infrastructure.Models
 {
     public class BaseEntity
     {

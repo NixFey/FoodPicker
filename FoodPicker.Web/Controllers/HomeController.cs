@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using FoodPicker.Web.Models;
+using FoodPicker.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace FoodPicker.Web.Controllers

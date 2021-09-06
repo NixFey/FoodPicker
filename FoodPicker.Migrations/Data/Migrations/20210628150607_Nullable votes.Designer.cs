@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FoodPicker.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210628143827_Add votes")]
-    partial class Addvotes
+    [Migration("20210628150607_Nullable votes")]
+    partial class Nullablevotes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,7 +18,7 @@ namespace FoodPicker.Web.Data.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.2");
 
-            modelBuilder.Entity("FoodPicker.Web.Models.Meal", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.Meal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +48,7 @@ namespace FoodPicker.Web.Data.Migrations
                     b.ToTable("Meals");
                 });
 
-            modelBuilder.Entity("FoodPicker.Web.Models.MealVote", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.MealVote", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +63,7 @@ namespace FoodPicker.Web.Data.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("VoteOption")
+                    b.Property<int?>("VoteOption")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -73,7 +73,7 @@ namespace FoodPicker.Web.Data.Migrations
                     b.ToTable("MealVotes");
                 });
 
-            modelBuilder.Entity("FoodPicker.Web.Models.MealWeek", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.MealWeek", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -286,9 +286,9 @@ namespace FoodPicker.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("FoodPicker.Web.Models.Meal", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.Meal", b =>
                 {
-                    b.HasOne("FoodPicker.Web.Models.MealWeek", "MealWeek")
+                    b.HasOne("FoodPicker.Infrastructure.Models.MealWeek", "MealWeek")
                         .WithMany("Meals")
                         .HasForeignKey("MealWeekId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -297,9 +297,9 @@ namespace FoodPicker.Web.Data.Migrations
                     b.Navigation("MealWeek");
                 });
 
-            modelBuilder.Entity("FoodPicker.Web.Models.MealVote", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.MealVote", b =>
                 {
-                    b.HasOne("FoodPicker.Web.Models.Meal", "Meal")
+                    b.HasOne("FoodPicker.Infrastructure.Models.Meal", "Meal")
                         .WithMany("MealVotes")
                         .HasForeignKey("MealId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -359,12 +359,12 @@ namespace FoodPicker.Web.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FoodPicker.Web.Models.Meal", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.Meal", b =>
                 {
                     b.Navigation("MealVotes");
                 });
 
-            modelBuilder.Entity("FoodPicker.Web.Models.MealWeek", b =>
+            modelBuilder.Entity("FoodPicker.Infrastructure.Models.MealWeek", b =>
                 {
                     b.Navigation("Meals");
                 });

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AngleSharp;
 using FoodPicker.Web.Data;
 using FoodPicker.Web.Enums;
-using FoodPicker.Web.Models;
+using FoodPicker.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

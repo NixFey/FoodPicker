@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using FoodPicker.Infrastructure.Entities;
+using FoodPicker.Infrastructure.Models;
 using FoodPicker.Web.Data;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
-using FoodPicker.Web.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace FoodPicker.Web.Services
+namespace FoodPicker.Infrastructure.Services
 {
     public class RoleDataInitializer
     {

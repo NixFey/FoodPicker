@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace FoodPicker.Web.Models
+namespace FoodPicker.Infrastructure.Models
 {
     public class ApplicationUser : IdentityUser
     {

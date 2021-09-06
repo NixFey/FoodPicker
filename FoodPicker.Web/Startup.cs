@@ -1,13 +1,13 @@
 using System;
 using System.Net;
+using FoodPicker.Infrastructure.Models;
+using FoodPicker.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using FoodPicker.Web.Data;
 using FoodPicker.Web.Enums;
-using FoodPicker.Web.Models;
-using FoodPicker.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -30,7 +30,8 @@ namespace FoodPicker.Web
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection"),
+                    x => x.MigrationsAssembly("FoodPicker.Migrations")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
