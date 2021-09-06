@@ -45,6 +45,7 @@ jobs:
             type=ref,event=pr
           flavor: |
             latest=${{ github.event_name != 'pull_request' }}
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.6.1
         with:
