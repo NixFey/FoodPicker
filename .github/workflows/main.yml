@@ -36,10 +36,12 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/evanlihou
+            ghcr.io/evanlihou/foodpicker
           # generate Docker tags based on the following events/attributes
           tags: |
             type=sha
+          flavor: |
+            latest=true
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.6.1
