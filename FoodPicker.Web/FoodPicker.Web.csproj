@@ -27,4 +27,8 @@
       <Folder Include="wwwroot\lib\bootstrap" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\FoodPicker.Infrastructure\FoodPicker.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
