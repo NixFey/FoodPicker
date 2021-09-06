@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
+using FoodPicker.Enums;
 using FoodPicker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FoodPicker.Controllers
 {
     [Route("[controller]")]
-    [Authorize(Policy = "AccessInternalAdminAreas")]
+    [Authorize(Policy = AuthorizationPolicies.AccessInternalAdminAreas)]
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

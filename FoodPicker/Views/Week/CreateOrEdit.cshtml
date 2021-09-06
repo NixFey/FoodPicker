@@ -1,4 +1,7 @@
+@using Microsoft.AspNetCore.Authorization
+@using FoodPicker.Enums
 @model MealWeek
+@inject IAuthorizationService _authorizationService;
 
 @{
     ViewBag.Title = "Week";
@@ -26,6 +29,11 @@
             <button type="submit" class="btn btn-secondary">Generate Meals</button>
         </form>
     }
+    
+    @if ((await _authorizationService.AuthorizeAsync(User, AuthorizationPolicies.AccessInternalAdminAreas)).Succeeded)
+    {
+        <button type="button" class="btn btn-danger" id="delete-week-button">Delete Week</button>
+    }
 
     <hr />
     <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -46,4 +54,26 @@
             </div>
         }
     </div>
+}
+
+@section Scripts {
+    <script>
+        const deleteButtonEl = document.getElementById("delete-week-button");
+        
+        if (deleteButtonEl) {
+            deleteButtonEl.addEventListener("click", async function (e) {
+                if (confirm("Are you sure you want to delete this week?")) {
+                    const fetchResult = await fetch("@Url.Action("Delete", new {weekId = Model.Id})", {
+                        method: "DELETE"
+                    });
+                    if (fetchResult.status !== 200) {
+                        alert(`Delete failed with status code ${fetchResult.statusText}`);
+                        return;
+                    }
+                    
+                    window.location.href = "@Url.Action("Index")";
+                }
+            });
+        }
+    </script>
 }

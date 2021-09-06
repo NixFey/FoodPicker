@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using FoodPicker.Data;
+using FoodPicker.Enums;
 using FoodPicker.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace FoodPicker
 {
@@ -50,7 +50,7 @@ namespace FoodPicker
             
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("AccessInternalAdminAreas", pol =>
+                opt.AddPolicy(AuthorizationPolicies.AccessInternalAdminAreas, pol =>
                 {
                     pol.RequireRole("Admin");
                     pol.RequireClaim("PasswordLogin", "true");
@@ -67,7 +67,15 @@ namespace FoodPicker
                     options.KnownProxies.Add(IPAddress.Parse(proxy));
                 }
             });
-            
+
+            if (bool.Parse(Configuration["RedirectToHttps"]))
+            {
+                // We're not running as HTTPS in the container, but we can trust the load balancer to be listening on 443
+                services.AddHttpsRedirection(opt =>
+                {
+                    opt.HttpsPort = 443;
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp;
 using FoodPicker.Data;
+using FoodPicker.Enums;
 using FoodPicker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -233,27 +234,16 @@ namespace FoodPicker.Controllers
             {
                 model.MealsSelected[meal.Id] = meal.SelectedForOrder ?? false;
                 var mealVotes = weekVotes.Where(x => x.MealId == meal.Id).ToList();
-                var score = 0.0;
-                foreach (var vote in mealVotes)
+                
+                var score = mealVotes.Sum(vote => vote.VoteOption switch
                 {
-                    switch (vote.VoteOption)
-                    {
-                        case MealVoteOption.Yes:
-                            score += 1;
-                            break;
-                        case MealVoteOption.Maybe:
-                            score += 0.5;
-                            break;
-                        case MealVoteOption.No:
-                            score += 0;
-                            break;
-                        case null:
-                            score += 0;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
+                    MealVoteOption.Yes => 1,
+                    MealVoteOption.Maybe => 0.5,
+                    MealVoteOption.No => 0,
+                    null => 0,
+                    _ => throw new Exception("Unknown vote option")
+                });
+                
                 model.MealResults.Add(new MealResult
                 {
                     Meal = meal,
@@ -310,6 +300,31 @@ namespace FoodPicker.Controllers
                 Meal = meal,
                 PreviousRatings = previousRatings 
             });
+        }
+
+        [HttpDelete("{weekId:int}")]
+        [Authorize(AuthorizationPolicies.AccessInternalAdminAreas)]
+        public async Task<ActionResult> Delete(int? weekId)
+        {
+            if (weekId is 0 or null) return BadRequest();
+
+            var week = await _db.MealWeeks.FirstOrDefaultAsync(x => x.Id == weekId);
+            if (week == null) return BadRequest();
+            var meals = _db.Meals.Where(x => x.MealWeekId == week.Id).ToList();
+            var mealIds = meals.Select(x => x.Id).ToList();
+            
+            var votes = _db.MealVotes.Where(x => mealIds.Contains(x.MealId)).AsEnumerable();
+            _db.MealVotes.RemoveRange(votes);
+
+            var ratings = _db.MealRatings.Where(x => mealIds.Contains(x.MealId)).AsEnumerable();
+            _db.MealRatings.RemoveRange(ratings);
+            
+            _db.Meals.RemoveRange(meals);
+            _db.MealWeeks.Remove(week);
+
+            await _db.SaveChangesAsync();
+            
+            return Ok();
         }
     }
 }
