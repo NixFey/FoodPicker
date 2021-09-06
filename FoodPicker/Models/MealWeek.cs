@@ -24,7 +24,7 @@ namespace FoodPicker.Models
             get
             {
                 var cal = CultureInfo.CurrentCulture.Calendar;
-                return cal.GetWeekOfYear(DeliveryDate, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+                return cal.GetWeekOfYear(DeliveryDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Saturday);
             }
         }
 
