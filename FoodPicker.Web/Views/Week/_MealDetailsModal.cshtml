@@ -1,0 +1,20 @@
+@model FoodPicker.Web.Controllers.WeekController.MealDetailsViewModel
+
+<img src="@Model.Meal.ImageUrl" alt="Photo of @Model.Meal.Name" style="width: 100%" />
+<h4>@Model.Meal.Name</h4>
+<p>@Model.Meal.Description</p>
+@if (!string.IsNullOrEmpty(Model.Meal.Tags))
+{
+    <span class="badge rounded-pill bg-primary">@Model.Meal.Tags</span>
+}
+
+@if (Model.PreviousRatings.Any())
+{
+    <h5>Previous Ratings</h5>
+    <ul>
+        @foreach (var rating in Model.PreviousRatings)
+        {
+            <li>@rating.Rating/@MealRating.MaxRating: @rating.RatingComment</li>
+        }
+    </ul>
+}

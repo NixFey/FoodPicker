@@ -1,0 +1,69 @@
+@model FoodPicker.Web.Controllers.WeekController.MealVoteViewModel
+
+@{
+    ViewBag.Title = "Vote";
+}
+
+<h2>Vote for Delivery on @Model.MealWeek.DeliveryDate.ToShortDateString()</h2>
+@if (Model.MealWeek.CanVote)
+{
+    <a href="@Model.MealWeek.HelloFreshMenuUrl">View on Hello Fresh</a>
+    <form asp-action="Vote" asp-route-id="@Model.MealWeek.Id" method="post" class="mb-3">
+        <div class="row row-cols-1 row-cols-md-4 g-4 mb-3">
+            @for (var i = 0; i < Model.UserMealVotes.Count; i++)
+            {
+                var vote = Model.UserMealVotes[i];
+                var meal = Model.MealWeek.Meals.First(x => x.Id == vote.MealId);
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="@meal.ImageUrl" class="card-img-top" alt="Meal Image">
+                        <div class="card-body">
+                            <h5 class="card-title">@meal.Name</h5>
+                            <p class="card-text">@meal.Description</p>
+                            @if (!string.IsNullOrEmpty(meal.Tags))
+                            {
+                                <span class="badge rounded-pill bg-primary">@meal.Tags</span>
+                            }
+                            @if (Model.PreviousRatings.Contains(meal.Id))
+                            {
+                                <button type="button" class="btn btn-link" data-bs-toggle="popover" data-bs-placement="top" 
+                                        data-bs-html="true"
+                                        @* Bootstrap is doing something weird so it needs to be double-encoded even though once should be enough? *@
+                                        data-bs-content="@(string.Join("<br />", Model.PreviousRatings[meal.Id].Select(x => HtmlEncoder.Encode($"{x.Rating}/{MealRating.MaxRating}: {x.RatingComment}"))))"
+                                        >Previous Ratings</button>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <input type="hidden" asp-for="@Model.UserMealVotes[i].MealId" value="@meal.Id"/>
+                            <input type="hidden" asp-for="@Model.UserMealVotes[i].Id" value="@vote.Id"/>
+                            @foreach (var option in Html.GetEnumSelectList<MealVoteOption>())
+                            {
+                                var optionId = @Html.IdFor(x => Model.UserMealVotes[i].VoteOption) + "_" + option.Value;
+                                <input type="radio" value="@option.Value" asp-for="@Model.UserMealVotes[i].VoteOption" id="@optionId" checked="@(((int?)vote.VoteOption).ToString() == option.Value)">
+                                <label class="" asp-for="@Model.UserMealVotes[i].VoteOption" for="@optionId">@option.Text</label>
+                            }
+                            <input type="text" class="form-control" asp-for="@Model.UserMealVotes[i].Comment" placeholder="Comment"/>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+}
+else
+{
+    <span class="text-center">Voting for this week is not currently available.</span>
+}
+
+@section Scripts {
+    @if (Model.MealWeek.CanVote && Model.PreviousRatings.Any())
+    {
+        <script>
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+              return new bootstrap.Popover(popoverTriggerEl)
+            })
+        </script>
+    }
+}
