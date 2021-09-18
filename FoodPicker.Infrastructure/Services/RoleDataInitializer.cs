@@ -3,15 +3,20 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FoodPicker.Infrastructure.Services
 {
-    public class RoleDataInitializer
+    public static class RoleDataInitializer
     {
         public static async Task SeedData(RoleManager<IdentityRole> roleManager)
         {
-            if (!(await roleManager.RoleExistsAsync("Admin")))
+            await CreateRoleIfNotExists(roleManager, "Admin");
+        }
+
+        private static async Task CreateRoleIfNotExists(RoleManager<IdentityRole> roleManager, string name)
+        {
+            if (!(await roleManager.RoleExistsAsync(name)))
             {
                 var role = new IdentityRole
                 {
-                    Name = "Admin"
+                    Name = name
                 };
                 await roleManager.CreateAsync(role);
             }

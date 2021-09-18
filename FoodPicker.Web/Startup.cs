@@ -79,6 +79,13 @@ namespace FoodPicker.Web
                     opt.HttpsPort = 443;
                 });
             }
+
+            switch (Configuration["MealService"])
+            {
+                case "HelloFresh":
+                    services.AddSingleton<IMealService, HelloFreshMealService>();
+                    break;
+            }
             
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }

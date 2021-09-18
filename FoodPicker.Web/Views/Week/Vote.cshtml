@@ -1,4 +1,6 @@
+@using FoodPicker.Infrastructure.Services
 @model FoodPicker.Web.Controllers.WeekController.MealVoteViewModel
+@inject IMealService _mealService;
 
 @{
     ViewBag.Title = "Vote";
@@ -7,7 +9,7 @@
 <h2>Vote for Delivery on @Model.MealWeek.DeliveryDate.ToShortDateString()</h2>
 @if (Model.MealWeek.CanVote)
 {
-    <a href="@Model.MealWeek.HelloFreshMenuUrl">View on Hello Fresh</a>
+    <a href="@_mealService.GetMenuUrlForMealWeek(Model.MealWeek)">View on @_mealService.MealServiceName</a>
     <form asp-action="Vote" asp-route-id="@Model.MealWeek.Id" method="post" class="mb-3">
         <div class="row row-cols-1 row-cols-md-4 g-4 mb-3">
             @for (var i = 0; i < Model.UserMealVotes.Count; i++)

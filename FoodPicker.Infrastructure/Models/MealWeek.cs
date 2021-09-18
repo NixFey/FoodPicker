@@ -9,22 +9,6 @@ namespace FoodPicker.Infrastructure.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        private int Year {
-            get
-            {
-                var cal = CultureInfo.CurrentCulture.Calendar;
-                return cal.GetYear(DeliveryDate);
-            }
-        }
-        [Required]
-        private int WeekNo {
-            get
-            {
-                var cal = CultureInfo.CurrentCulture.Calendar;
-                return cal.GetWeekOfYear(DeliveryDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Saturday);
-            }
-        }
 
         public DateTime DeliveryDate { get; set; }
 
@@ -45,8 +29,6 @@ namespace FoodPicker.Infrastructure.Models
                 return deadline;
             }
         }
-
-        public string HelloFreshMenuUrl => $"https://www.hellofresh.com/menus/{Year}-W{WeekNo}";
 
         public List<Meal> Meals { get; set; }
         public MealWeekStatus MealWeekStatus { get; set; }

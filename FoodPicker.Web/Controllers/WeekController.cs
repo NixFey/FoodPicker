@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using AngleSharp;
 using FoodPicker.Web.Data;
 using FoodPicker.Web.Enums;
 using FoodPicker.Infrastructure.Models;
+using FoodPicker.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +23,14 @@ namespace FoodPicker.Web.Controllers
         private readonly ILogger<WeekController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _db;
+        private readonly IMealService _mealService;
 
-        public WeekController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<WeekController> logger, ApplicationDbContext db)
+        public WeekController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<WeekController> logger, ApplicationDbContext db, IMealService mealService)
         {
             _userManager = userManager;
             _logger = logger;
             _db = db;
+            _mealService = mealService;
         }
 
         public class WeekListViewModel
@@ -114,32 +118,8 @@ namespace FoodPicker.Web.Controllers
             if (id is 0 or null) return BadRequest();
             var week = await _db.MealWeeks.Include(x => x.Meals).FirstOrDefaultAsync(x => x.Id == id);
             if (week == null) return BadRequest();
-            
-            var config = AngleSharp.Configuration.Default.WithDefaultLoader();
-            var context = BrowsingContext.New(config);
-            var document = await context.OpenAsync(week.HelloFreshMenuUrl);
-            var mealTitles = document.QuerySelectorAll("h4");
 
-            var meals = new List<Meal>();
-            
-            foreach (var mealTitle in mealTitles)
-            {
-                var title = mealTitle.TextContent;
-                var description = mealTitle.ParentElement?.ParentElement?.QuerySelector("div+span")?.TextContent;
-                var imageUrl = mealTitle.ParentElement?.ParentElement?.ParentElement?.ParentElement?.QuerySelector("img")?
-                    .GetAttribute("src");
-                // <h4>.parentElement.parentElement.querySelectorAll('[role=button]>span')
-                var majorTags = mealTitle.ParentElement?.ParentElement?.QuerySelector("[role='button']")?.TextContent;
-                
-                meals.Add(new Meal
-                {
-                    MealWeekId = week.Id,
-                    Name = title,
-                    Description = description,
-                    ImageUrl = imageUrl,
-                    Tags = majorTags
-                });
-            }
+            var meals = await _mealService.GetMealsForMealWeek(week);
 
             if (meals.Any())
             {
