@@ -6,7 +6,6 @@ namespace FoodPicker.Infrastructure.Models
 {
     public class Meal : BaseEntity
     {
-        public int Id { get; set; }
         public int MealWeekId { get; set; }
         
         [ForeignKey(nameof(MealWeekId))]

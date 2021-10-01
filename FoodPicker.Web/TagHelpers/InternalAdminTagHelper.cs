@@ -1,9 +1,6 @@
-using System.Security.Claims;
 using System.Threading.Tasks;
-using FoodPicker.Infrastructure.Models;
 using FoodPicker.Web.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 

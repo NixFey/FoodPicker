@@ -7,7 +7,6 @@ namespace FoodPicker.Infrastructure.Models
     public class MealRating : BaseEntity
     {
         public const int MaxRating = 4;
-        public int Id { get; set; }
         public int MealId { get; set; }
         [ForeignKey(nameof(MealId))]
         public Meal Meal { get; set; }

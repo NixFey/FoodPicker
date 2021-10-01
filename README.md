@@ -42,4 +42,18 @@ When logging into the site, admin users are given the option to enter their pass
 
 TODO
 
+## Helpful Tips
+
+Adding a migration:
+```bash
+cd FoodPicker.Migrations
+dotnet ef migrations add "Migration Name" -s ../FoodPicker.Web
+```
+
+Updating DB
+```bash
+cd FoodPicker.Migrations
+dotnet ef database update -s ../FoodPicker.Web
+```
+
 <!-- README template from https://gist.github.com/martensonbj/6bf2ec2ed55f5be723415ea73c4557c4 -->

@@ -5,13 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using AngleSharp;
 using FoodPicker.Infrastructure.Models;
+using TimeZoneConverter;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace FoodPicker.Infrastructure.Services
 {
-    public class HelloFreshMealService : IMealService
+    public class HelloFreshMealService : MealService
     {
-        public new readonly string MealServiceName = "Hello Fresh";
-        
+        public override string MealServiceName => "Hello Fresh";
+
+        public HelloFreshMealService(IConfiguration configuration) : base(configuration)
+        {
+        }
+
         public override string GetMenuUrlForMealWeek(MealWeek week)
         {
             var cal = CultureInfo.CurrentCulture.Calendar;
@@ -40,6 +46,26 @@ namespace FoodPicker.Infrastructure.Services
                     ImageUrl = imageUrl,
                     Tags = majorTags
                 }).ToList();
+        }
+
+        protected override DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate)
+        {
+            // Hello fresh orders are due at 11:59 PM Pacific Time 5 days before the delivery
+            var subtractedDelivery = deliveryDate.AddDays(-5);
+
+            var pacificTime = TZConvert.GetTimeZoneInfo("America/Los_Angeles");
+
+            var deadline = new DateTime
+            (
+                year: subtractedDelivery.Year,
+                month: subtractedDelivery.Month,
+                day: subtractedDelivery.Day,
+                hour: 23,
+                minute: 59,
+                second: 00,
+                kind: DateTimeKind.Unspecified
+            );
+            return TimeZoneInfo.ConvertTimeToUtc(deadline, pacificTime);
         }
     }
 }

@@ -16,7 +16,7 @@
 @if (Model.MealResults.Any())
 {
     <form asp-action="ViewResults" method="post">
-        @if (Model.Editable)
+        @if (Model.IsEditable)
         {
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button name="action" value="save" type="submit" class="btn btn-primary">Save</button>
@@ -55,12 +55,12 @@
                         </td>
                     }
                     <td>@meal.Score</td>
-                    <td class="text-center"><input type="checkbox" disabled="@(!Model.Editable)" asp-for="@Model.MealsSelected[meal.Meal.Id]" class="form-check-input"/></td>
+                    <td class="text-center"><input type="checkbox" disabled="@(!Model.IsEditable)" asp-for="@Model.MealsSelected[meal.Meal.Id]" class="form-check-input"/></td>
                 </tr>
             }
             </tbody>
         </table>
-        @if (Model.Editable)
+        @if (Model.IsEditable)
         {
             <button name="action" value="save" type="submit" class="btn btn-primary">Save</button>
             <button name="action" value="saveLock" type="submit" class="btn btn-primary">Save and Lock Week</button>

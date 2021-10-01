@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FoodPicker.Infrastructure.Data;
+using FoodPicker.Infrastructure.Models;
 using FoodPicker.Web.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FoodPicker.Web.Controllers
 {
@@ -13,11 +15,15 @@ namespace FoodPicker.Web.Controllers
     [Route("[controller]")]
     public class ApiController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly MealWeekRepository _mealWeekRepo;
+        private readonly MealVoteRepository _mealVoteRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ApiController(ApplicationDbContext dbContext)
+        public ApiController(MealWeekRepository mealWeekRepo, MealVoteRepository mealVoteRepo, UserManager<ApplicationUser> userManager)
         {
-            _db = dbContext;
+            _mealWeekRepo = mealWeekRepo;
+            _mealVoteRepo = mealVoteRepo;
+            _userManager = userManager;
         }
 
         public class NextWeekResult
@@ -31,26 +37,26 @@ namespace FoodPicker.Web.Controllers
         [HttpGet("[action]")]
         public async Task<NextWeekResult> NextWeek()
         {
-            var week = (await _db.MealWeeks.OrderBy(x => x.DeliveryDate).Include(x => x.Meals).ToListAsync())
-                .FirstOrDefault(x => x.OrderDeadline > DateTime.Now && x.OrderDeadline < DateTime.Now.AddDays(7));
-
+            var week = await _mealWeekRepo.GetCurrentWithMeals();
+            
             if (week == null) return null;
 
             var numMeals = week.Meals.Count;
 
-            var mealVotes = _db.MealVotes.Where(x => x.Meal.MealWeekId == week.Id && x.VoteOption != null).AsEnumerable();
+            var mealVotes = _mealVoteRepo.GetVotesForWeekAsEnumerable(week);
 
             var fullyVotedUserIds = from v in mealVotes
                 group v by v.UserId into u
                 where u.Count() == numMeals
                 select u.Key;
             
-            var users = _db.Users.ToList();
+            var users = _userManager.Users.ToList();
 
             var fullyVotedUsernames =
                 users.Where(x => fullyVotedUserIds.Contains(x.Id)).Select(x => x.UserName).ToList();
-            
-            var pendingVoteUserNames = users.Where(x => !fullyVotedUserIds.Contains(x.Id) && x.VoteIsRequired == true).Select(x => x.UserName).ToList();
+
+            var pendingVoteUserNames = users.Where(x => !fullyVotedUserIds.Contains(x.Id) && x.VoteIsRequired)
+                .Select(x => x.UserName).ToList();
 
             return new NextWeekResult
             {

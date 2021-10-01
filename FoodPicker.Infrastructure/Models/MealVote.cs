@@ -4,7 +4,6 @@ namespace FoodPicker.Infrastructure.Models
 {
     public class MealVote : BaseEntity
     {
-        public int Id { get; set; }
         public int MealId { get; set; }
         
         [ForeignKey(nameof(MealId))]
@@ -12,7 +11,9 @@ namespace FoodPicker.Infrastructure.Models
         
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
-        public MealVoteOption? VoteOption { get; set; }
+        
+        public int VoteOptionId { get; set; }
+        public VoteOption VoteOption { get; set; }
         public string Comment { get; set; }
     }
     

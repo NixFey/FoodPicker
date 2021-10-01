@@ -7,9 +7,6 @@ namespace FoodPicker.Infrastructure.Models
 {
     public class MealWeek : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         public DateTime DeliveryDate { get; set; }
 
         public DateTime OrderDeadline

@@ -1,5 +1,7 @@
 @using Humanizer
+@using FoodPicker.Infrastructure.Services
 @model List<FoodPicker.Web.Controllers.WeekController.WeekListViewModel>
+@inject MealService _mealService
 
 @{
     ViewBag.Title = "Week List";
@@ -28,7 +30,7 @@
         {
             <tr>
                 <td>@week.MealWeek.DeliveryDate.ToShortDateString()</td>
-                <td>@week.MealWeek.OrderDeadline.Humanize()</td>
+                <td>@_mealService.GetLocalOrderDeadlineForDeliveryDate(week.MealWeek.DeliveryDate).Humanize(false)</td>
                 <td>@Html.DisplayFor(x => week.MealWeek.MealWeekStatus)</td>
                 <td>@(week.CurrentUserVotingComplete ? "Yes" : "No")</td>
                 <td>
@@ -59,7 +61,7 @@
         {
             <tr>
                 <td>@week.MealWeek.DeliveryDate.ToShortDateString()</td>
-                <td>@week.MealWeek.OrderDeadline.Humanize()</td>
+                <td>@_mealService.GetLocalOrderDeadlineForDeliveryDate(week.MealWeek.DeliveryDate).Humanize(false)</td>
                 <td>@Html.DisplayFor(x => week.MealWeek.MealWeekStatus)</td>
                 <td>
                     @if (User.IsInRole("Admin"))

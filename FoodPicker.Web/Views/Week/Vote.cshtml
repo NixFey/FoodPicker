@@ -1,9 +1,12 @@
 @using FoodPicker.Infrastructure.Services
 @model FoodPicker.Web.Controllers.WeekController.MealVoteViewModel
-@inject IMealService _mealService;
+@inject MealService _mealService;
+@inject MealVoteService _voteService;
 
 @{
     ViewBag.Title = "Vote";
+
+    var optionSelectList = await _voteService.GetAllVoteOptions();
 }
 
 <h2>Vote for Delivery on @Model.MealWeek.DeliveryDate.ToShortDateString()</h2>
@@ -38,11 +41,11 @@
                         <div class="card-footer">
                             <input type="hidden" asp-for="@Model.UserMealVotes[i].MealId" value="@meal.Id"/>
                             <input type="hidden" asp-for="@Model.UserMealVotes[i].Id" value="@vote.Id"/>
-                            @foreach (var option in Html.GetEnumSelectList<MealVoteOption>())
+                            @foreach (var option in optionSelectList)
                             {
-                                var optionId = @Html.IdFor(x => Model.UserMealVotes[i].VoteOption) + "_" + option.Value;
-                                <input type="radio" value="@option.Value" asp-for="@Model.UserMealVotes[i].VoteOption" id="@optionId" checked="@(((int?)vote.VoteOption).ToString() == option.Value)">
-                                <label class="" asp-for="@Model.UserMealVotes[i].VoteOption" for="@optionId">@option.Text</label>
+                                var optionId = @Html.IdFor(x => Model.UserMealVotes[i].VoteOptionId) + "_" + option.Id;
+                                <input type="radio" value="@option.Id" asp-for="@Model.UserMealVotes[i].VoteOptionId" id="@optionId" checked="@(vote.VoteOptionId == option.Id)">
+                                <label class="" asp-for="@Model.UserMealVotes[i].VoteOptionId" for="@optionId">@option.Name</label>
                             }
                             <input type="text" class="form-control" asp-for="@Model.UserMealVotes[i].Comment" placeholder="Comment"/>
                         </div>

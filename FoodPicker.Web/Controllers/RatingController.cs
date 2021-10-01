@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using FoodPicker.Infrastructure.Data;
 using FoodPicker.Web.Data;
 using FoodPicker.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -18,14 +20,14 @@ namespace FoodPicker.Web.Controllers
     public class RatingController : Controller
     {
         private readonly ILogger<RatingController> _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApplicationDbContext _db;
+        private readonly MealRatingRepository _mealRatingRepo;
+        private readonly EfRepository<Meal> _mealRepo;
 
-        public RatingController(UserManager<ApplicationUser> userManager, ILogger<RatingController> logger, ApplicationDbContext db)
+        public RatingController(ILogger<RatingController> logger, MealRatingRepository mealRatingRepo, EfRepository<Meal> mealRepo)
         {
-            _userManager = userManager;
             _logger = logger;
-            _db = db;
+            _mealRatingRepo = mealRatingRepo;
+            _mealRepo = mealRepo;
         }
 
         public class ListViewModel
@@ -38,10 +40,8 @@ namespace FoodPicker.Web.Controllers
         {
             var model = new ListViewModel
             {
-                MealRatings = await _db.MealRatings.Include(x => x.Meal).ThenInclude(x => x.MealWeek).ToListAsync(),
-                MealsMissingRating = await _db.Meals.Include(x => x.MealRating).Include(x => x.MealWeek)
-                    .Where(x => x.SelectedForOrder == true && x.MealRating == null)
-                    .ToListAsync()
+                MealRatings = await _mealRatingRepo.ListAllWithWeekAndMealsAsync(),
+                MealsMissingRating = await _mealRatingRepo.GetMealsMissingRating()
             };
             return View("List", model);
         }
@@ -56,15 +56,22 @@ namespace FoodPicker.Web.Controllers
             {
                 model = new MealRating()
                 {
-                    Meal = await _db.Meals.FindAsync(mealId),
+                    Meal = await _mealRepo.GetByIdAsync((int) mealId),
                 };
             }
             else
             {
-                model = await _db.MealRatings.Include(x => x.Meal).FirstOrDefaultAsync(x => x.Id == id);
+                if (id != null)
+                {
+                    model = await _mealRatingRepo.GetByIdWithMealAsync((int)id);
+                }
+                else
+                {
+                    throw new ApplicationException("This shouldn't happen.");
+                }
             }
             return View(model);
-        } 
+        }
         
         [HttpPost]
         [Route("Create/{mealId}", Name = "RatingCreate")]
@@ -81,17 +88,23 @@ namespace FoodPicker.Web.Controllers
                     RatingComment = model.RatingComment,
                     RatingTime = DateTime.Now,
                 };
-                _db.MealRatings.Add(dbModel);
+                await _mealRatingRepo.AddAsync(dbModel);
+                return RedirectToAction("Index");
+            }
+            
+            if (id != null)
+            {
+                dbModel = await _mealRatingRepo.GetByIdAsync((int)id);
             }
             else
             {
-                dbModel = await _db.MealRatings.FindAsync(id);
-                dbModel.Rating = model.Rating;
-                dbModel.RatingComment = model.RatingComment;
-                dbModel.RatingTime = DateTime.Now;
+                throw new ApplicationException("This shouldn't happen.");
             }
-            
-            await _db.SaveChangesAsync();
+            dbModel.Rating = model.Rating;
+            dbModel.RatingComment = model.RatingComment;
+            dbModel.RatingTime = DateTime.Now;
+
+            await _mealRatingRepo.UpdateAsync(dbModel);
             return RedirectToAction("Index");
         }
     }

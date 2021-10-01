@@ -19,6 +19,10 @@
         <label asp-for="Password"></label>
         <input asp-for="Password" class="form-control"/>
         <span asp-validation-for="Password"></span>
+        @if (!creatingUser)
+        {
+            <div class="form-text">Enter a password only if you want to change the user's password.</div>
+        }
     </div>
     <div class="mb-3 form-check">
         <input asp-for="VoteIsRequired" type="checkbox" class="form-check-input"/>

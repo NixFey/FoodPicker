@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
 using System.Net;
+using System.Reflection;
+using FoodPicker.Infrastructure.Data;
 using FoodPicker.Infrastructure.Models;
 using FoodPicker.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
@@ -83,11 +86,26 @@ namespace FoodPicker.Web
             switch (Configuration["MealService"])
             {
                 case "HelloFresh":
-                    services.AddSingleton<IMealService, HelloFreshMealService>();
+                    services.AddScoped<MealService, HelloFreshMealService>();
+                    // services.AddScoped<HelloFreshMealService>();
+                    // services.AddScoped<MealService>((serviceProvider) => serviceProvider.GetRequiredService<HelloFreshMealService>());
                     break;
             }
             
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            
+            var repoTypes = typeof(Repository).Assembly.GetTypes().Where(x => x.IsSubclassOf(typeof(Repository)));
+            
+            foreach(var repoType in repoTypes )
+            {
+                services.AddScoped(repoType);
+            }
+            
+            var serviceTypes = typeof(IService).Assembly.GetTypes().Where(x => x.IsAssignableTo(typeof(IService)) && x != typeof(IService));
+            foreach(var serviceType in serviceTypes )
+            {
+                services.AddScoped(serviceType);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

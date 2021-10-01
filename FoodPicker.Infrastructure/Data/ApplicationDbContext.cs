@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FoodPicker.Infrastructure.Models;
+﻿using FoodPicker.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodPicker.Web.Data
+namespace FoodPicker.Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions options)
             : base(options)
         {
         }
@@ -18,5 +15,6 @@ namespace FoodPicker.Web.Data
         public DbSet<Meal> Meals { get; set; }
         public DbSet<MealVote> MealVotes { get; set; }
         public DbSet<MealRating> MealRatings { get; set; }
+        public DbSet<VoteOption> VoteOptions { get; set; }
     }
 }
