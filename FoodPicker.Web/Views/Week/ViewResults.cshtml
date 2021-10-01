@@ -1,0 +1,111 @@
+@model FoodPicker.Web.Controllers.WeekController.ViewResultsViewModel
+
+@{
+    ViewBag.Title = "View Results";
+}
+
+<h2>View Results for Delivery on @Model.Week.DeliveryDate.ToShortDateString()</h2>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-route="WeekEdit" asp-route-id="@Model.Week.Id">Edit Week</a>
+}
+@if (Model.Week.CanVote)
+{
+    <a asp-action="Vote" asp-route-id="@Model.Week.Id">Back to Voting</a>
+}
+@if (Model.MealResults.Any())
+{
+    <form asp-action="ViewResults" method="post">
+        @if (Model.IsEditable)
+        {
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button name="action" value="save" type="submit" class="btn btn-primary">Save</button>
+                <button name="action" value="saveLock" type="submit" class="btn btn-primary">Save and Lock Week</button>
+            </div>
+        }
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                @foreach (var user in Model.ParticipatingUsers)
+                {
+                    <th>@user.UserName</th>
+                }
+                <th>Score</th>
+                <th>Selected</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var meal in Model.MealResults.OrderByDescending(x => x.Score))
+            {
+                <tr>
+                    <td><a onclick="loadMealDetails(@meal.Meal.Id)" href="javascript:false">@meal.Meal.Name</a></td>
+                    @foreach (var user in Model.ParticipatingUsers)
+                    {
+                        var vote = meal.Votes.FirstOrDefault(x => x.UserId == user.Id);
+                        <td>
+                            @if (vote?.VoteOption != null)
+                            {
+                                <text>@vote.VoteOption.ToString()</text>
+                                if (!string.IsNullOrWhiteSpace(vote.Comment))
+                                {
+                                    <i class="d-block">@vote.Comment</i>
+                                }
+                            }
+                        </td>
+                    }
+                    <td>@meal.Score</td>
+                    <td class="text-center"><input type="checkbox" disabled="@(!Model.IsEditable)" asp-for="@Model.MealsSelected[meal.Meal.Id]" class="form-check-input"/></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        @if (Model.IsEditable)
+        {
+            <button name="action" value="save" type="submit" class="btn btn-primary">Save</button>
+            <button name="action" value="saveLock" type="submit" class="btn btn-primary">Save and Lock Week</button>
+        }
+    </form>
+    
+    <div class="modal" id="mealDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Meal Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <text>No meals found.</text>
+}
+
+@section Scripts
+{
+    <script>
+    const mealDetailsModalEl = document.getElementById("mealDetailsModal");
+    var mealDetailsModal = new bootstrap.Modal(mealDetailsModalEl);
+    const modalContent = mealDetailsModalEl.querySelector(".modal-body");
+    const loadingContent = "<p>Loading...</p>";
+    
+    async function loadMealDetails(mealId) {
+        modalContent.innerHTML = loadingContent;
+        mealDetailsModal.show();
+        
+        const fetchResult = await fetch(`@Url.Action("MealDetailsModal")/${mealId}`);
+        
+        if (fetchResult.ok) {
+            modalContent.innerHTML = await fetchResult.text();
+        } else {
+            modalContent.innerHTML = `<p>Unable to fetch meal info: ${fetchResult.statusText}</p>`; 
+        }
+    }
+    </script>
+}
+    

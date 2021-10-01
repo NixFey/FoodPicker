@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker", "FoodPicker\FoodPicker.csproj", "{27B7F6D2-367A-417F-96B9-BFE706482A23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker.Web", "FoodPicker.Web\FoodPicker.Web.csproj", "{27B7F6D2-367A-417F-96B9-BFE706482A23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker.Infrastructure", "FoodPicker.Infrastructure\FoodPicker.Infrastructure.csproj", "{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodPicker.Migrations", "FoodPicker.Migrations\FoodPicker.Migrations.csproj", "{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +16,13 @@ Global
 		{27B7F6D2-367A-417F-96B9-BFE706482A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27B7F6D2-367A-417F-96B9-BFE706482A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27B7F6D2-367A-417F-96B9-BFE706482A23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D1DDB3A-D552-44A3-ABB0-9239B58F83A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEEA9F24-5949-4AE3-89EE-D203EA3D2199}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

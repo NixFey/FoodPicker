@@ -1,0 +1,38 @@
+@model IReadOnlyList<VoteOption>
+
+@{
+    ViewBag.Title = "Option List";
+}
+
+<h2>Users</h2>
+
+@if (Model.Any())
+{
+    <a asp-route="OptionCreate">Create Option</a>
+    <table class="table table-striped my-3">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Weight</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var option in Model)
+        {
+            <tr>
+                <td>@option.Name</td>
+                <td>@option.Weight</td>
+                <td>
+                   <a asp-route="OptionEdit" asp-route-id="@option.Id">Edit</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <text>No users found. <a asp-route="OptionCreate">Create one?</a></text>
+}
+
