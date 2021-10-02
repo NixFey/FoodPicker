@@ -14,6 +14,11 @@
 {
     <a href="@_mealService.GetMenuUrlForMealWeek(Model.MealWeek)">View on @_mealService.MealServiceName</a>
     <form asp-action="Vote" asp-route-id="@Model.MealWeek.Id" method="post" class="mb-3">
+        <div class="mb-3">
+            <label asp-for="WeekUserComment"></label>
+            <textarea asp-for="WeekUserComment" class="form-control"></textarea>
+            <div class="form-text">Add a comment for the week, like if you'll be out of town for part of it.</div>
+        </div>
         <div class="row row-cols-1 row-cols-md-4 g-4 mb-3">
             @for (var i = 0; i < Model.UserMealVotes.Count; i++)
             {
@@ -31,11 +36,10 @@
                             }
                             @if (Model.PreviousRatings.Contains(meal.Id))
                             {
-                                <button type="button" class="btn btn-link" data-bs-toggle="popover" data-bs-placement="top" 
+                                <button type="button" class="btn btn-link" data-bs-toggle="popover" data-bs-placement="top"
                                         data-bs-html="true"
                                         @* Bootstrap is doing something weird so it needs to be double-encoded even though once should be enough? *@
-                                        data-bs-content="@(string.Join("<br />", Model.PreviousRatings[meal.Id].Select(x => HtmlEncoder.Encode($"{x.Rating}/{MealRating.MaxRating}: {x.RatingComment}"))))"
-                                        >Previous Ratings</button>
+                                        data-bs-content="@(string.Join("<br />", Model.PreviousRatings[meal.Id].Select(x => HtmlEncoder.Encode($"{x.Rating}/{MealRating.MaxRating}: {x.RatingComment}"))))">Previous Ratings</button>
                             }
                         </div>
                         <div class="card-footer">

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
@@ -25,8 +26,9 @@ namespace FoodPicker.Web.Controllers
         private readonly MealRatingRepository _mealRatingRepo;
         private readonly EfRepository<Meal> _mealRepo;
         private readonly MealVoteService _mealVoteService;
+        private readonly WeekUserCommentRepository _commentRepository;
 
-        public WeekController(UserManager<ApplicationUser> userManager, MealService mealService, MealWeekRepository mealWeekRepo, EfRepository<Meal> mealRepo, MealVoteRepository mealVoteRepo, MealVoteService mealVoteService, MealRatingRepository mealRatingRepo)
+        public WeekController(UserManager<ApplicationUser> userManager, MealService mealService, MealWeekRepository mealWeekRepo, EfRepository<Meal> mealRepo, MealVoteRepository mealVoteRepo, MealVoteService mealVoteService, MealRatingRepository mealRatingRepo, WeekUserCommentRepository commentRepository)
         {
             _userManager = userManager;
             _mealService = mealService;
@@ -35,6 +37,7 @@ namespace FoodPicker.Web.Controllers
             _mealVoteRepo = mealVoteRepo;
             _mealVoteService = mealVoteService;
             _mealRatingRepo = mealRatingRepo;
+            _commentRepository = commentRepository;
         }
 
         public class WeekListViewModel
@@ -145,6 +148,10 @@ namespace FoodPicker.Web.Controllers
             public MealWeek MealWeek { get; set; }
             public List<MealVote> UserMealVotes { get; set; }
             public ILookup<int, MealRating> PreviousRatings { get; set; }
+            [Required]
+            [MaxLength(1000)]
+            [Display(Name = "User Comment")]
+            public string WeekUserComment { get; set; }
         }
         [HttpGet("Vote/{id:int}")]
         public async Task<IActionResult> Vote(int? id)
@@ -163,13 +170,32 @@ namespace FoodPicker.Web.Controllers
                 {
                     MealId = x.Id
                 }).ToList(),
-                PreviousRatings = ratingLookup
+                PreviousRatings = ratingLookup,
+                WeekUserComment = (await _commentRepository.GetCommentForWeekAndUser((int) id, _userManager.GetUserId(User)))?.Comment
             });
-        } 
+        }
         
         [HttpPost("Vote/{id:int}")]
         public async Task<IActionResult> Vote(int? id, [FromForm] MealVoteViewModel model)
         {
+            var userId = _userManager.GetUserId(User);
+            var dbComment = await _commentRepository.GetCommentForWeekAndUser((int) id, userId);
+            if (dbComment == null)
+            {
+                dbComment = new WeekUserComment
+                {
+                    WeekId = (int)id,
+                    UserId = userId,
+                    Comment = model.WeekUserComment
+                };
+                await _commentRepository.AddAsync(dbComment);
+            }
+            else
+            {
+                dbComment.Comment = model.WeekUserComment;
+                await _commentRepository.UpdateAsync(dbComment);
+            }
+            
             foreach (var dbVote in model.UserMealVotes.Select(vote => new MealVote
             {
                 Id = vote.Id,
@@ -200,6 +226,7 @@ namespace FoodPicker.Web.Controllers
             public List<MealResult> MealResults { get; } = new();
             public Dictionary<int, bool> MealsSelected { get; } = new();
             public bool IsEditable { get; set; }
+            public List<WeekUserComment> UserComments { get; set; }
         }
 
         public class MealResult
@@ -219,7 +246,8 @@ namespace FoodPicker.Web.Controllers
             {
                 Week = week,
                 ParticipatingUsers = await _userManager.Users.ToListAsync(),
-                IsEditable = week.CanVote
+                IsEditable = week.CanVote,
+                UserComments = await _commentRepository.GetCommentsForWeek((int) weekId)
             };
             var meals = week.Meals;
             

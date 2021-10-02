@@ -15,6 +15,18 @@
 }
 @if (Model.MealResults.Any())
 {
+    @if (Model.UserComments.Any())
+    {
+        <div class="card my-2">
+            <div class="card-header">Comments</div>
+            <div class="card-body">
+                @foreach (var comment in Model.UserComments)
+                {
+                    <p><b>@comment.User.UserName</b> - @comment.Comment</p>
+                }
+            </div>
+        </div>
+    }
     <form asp-action="ViewResults" method="post">
         @if (Model.IsEditable)
         {
