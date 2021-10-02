@@ -6,7 +6,13 @@
 version: 2
 updates:
   - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/FoodPicker" # Location of package manifests
+    directory: "/FoodPicker.Infrastructure" # Location of package manifests
+    schedule:
+      interval: "daily"
+    assignees:
+      - "evanlihou"
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/FoodPicker.Web" # Location of package manifests
     schedule:
       interval: "daily"
     assignees:
