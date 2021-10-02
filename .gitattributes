@@ -1,1 +1,2 @@
 FoodPicker.Web/wwwroot/lib linguist-vendored
+*.js linguist-vendored
