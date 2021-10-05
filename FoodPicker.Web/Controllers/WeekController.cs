@@ -148,7 +148,6 @@ namespace FoodPicker.Web.Controllers
             public MealWeek MealWeek { get; set; }
             public List<MealVote> UserMealVotes { get; set; }
             public ILookup<int, MealRating> PreviousRatings { get; set; }
-            [Required]
             [MaxLength(1000)]
             [Display(Name = "User Comment")]
             public string WeekUserComment { get; set; }
@@ -182,17 +181,20 @@ namespace FoodPicker.Web.Controllers
             var dbComment = await _commentRepository.GetCommentForWeekAndUser((int) id, userId);
             if (dbComment == null)
             {
-                dbComment = new WeekUserComment
+                if (!string.IsNullOrEmpty(model.WeekUserComment))
                 {
-                    WeekId = (int)id,
-                    UserId = userId,
-                    Comment = model.WeekUserComment
-                };
-                await _commentRepository.AddAsync(dbComment);
+                    dbComment = new WeekUserComment
+                    {
+                        WeekId = (int)id,
+                        UserId = userId,
+                        Comment = model.WeekUserComment
+                    };
+                    await _commentRepository.AddAsync(dbComment);
+                }
             }
             else
             {
-                dbComment.Comment = model.WeekUserComment;
+                dbComment.Comment = model.WeekUserComment ?? "";
                 await _commentRepository.UpdateAsync(dbComment);
             }
             
