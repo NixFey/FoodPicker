@@ -276,13 +276,10 @@ namespace FoodPicker.Web.Controllers
             
             foreach (var (key, value) in model.MealsSelected)
             {
-                var meal = new Meal
-                {
-                    Id = key,
-                    SelectedForOrder = value
-                };
+                var dbModel = await _mealRepo.GetByIdAsync(key);
+                dbModel.SelectedForOrder = value;
 
-                await _mealRepo.UpdateAsync(meal);
+                await _mealRepo.UpdateAsync(dbModel);
             }
 
             if (action == "saveLock")
