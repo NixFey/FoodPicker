@@ -36,6 +36,7 @@ namespace FoodPicker.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            if (!_userManager.Users.Any()) return RedirectToAction("Register");
             return View();
         }
         

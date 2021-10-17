@@ -10,7 +10,20 @@ Ideas for future features can be found in the project's issues section.
 
 ## Project Screen Shot(s)
 
-TODO
+### Registration Page
+![Registration page](assets/docs_images/register.png)
+
+### Week Management
+![New week page](assets/docs_images/new_week.png)
+![Edit week page](assets/docs_images/meal_generation.png)
+
+### Voting
+![Vote page](assets/docs_images/vote.png)
+![View results page](assets/docs_images/view_results.png)
+
+### Ratings
+![Edit rating page](assets/docs_images/ratings.png)
+![Previous Ratings popup](assets/docs_images/previous_ratings.png)
 
 ## Installation and Setup Instructions
 
