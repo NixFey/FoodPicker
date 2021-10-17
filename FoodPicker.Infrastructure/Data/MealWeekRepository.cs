@@ -3,14 +3,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Models;
+using FoodPicker.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodPicker.Infrastructure.Data
 {
     public class MealWeekRepository : EfRepository<MealWeek>
     {
-        public MealWeekRepository(ApplicationDbContext dbContext) : base(dbContext)
+        private readonly MealService _mealService;
+        public MealWeekRepository(ApplicationDbContext dbContext, MealService mealService) : base(dbContext)
         {
+            this._mealService = mealService;
         }
 
         public async Task<MealWeek> GetByIdWithMealsAsync(int id, CancellationToken cancellationToken = default)
@@ -28,7 +31,10 @@ namespace FoodPicker.Infrastructure.Data
         {
             return (await DbContext.MealWeeks.OrderBy(x => x.DeliveryDate).Include(x => x.Meals)
                 .ToListAsync(cancellationToken)).FirstOrDefault(x =>
-                x.OrderDeadline > DateTime.Now && x.OrderDeadline < DateTime.Now.AddDays(7));
+            {
+                var orderDeadline = _mealService.GetLocalOrderDeadlineForDeliveryDate(x.DeliveryDate);
+                return orderDeadline > DateTime.Now && orderDeadline < DateTime.Now.AddDays(7);
+            });
         }
 
         /// <summary>

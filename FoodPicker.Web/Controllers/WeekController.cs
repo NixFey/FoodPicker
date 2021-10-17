@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
-using FoodPicker.Web.Data;
 using FoodPicker.Web.Enums;
 using FoodPicker.Infrastructure.Models;
 using FoodPicker.Infrastructure.Services;
@@ -177,6 +176,7 @@ namespace FoodPicker.Web.Controllers
         [HttpPost("Vote/{id:int}")]
         public async Task<IActionResult> Vote(int? id, [FromForm] MealVoteViewModel model)
         {
+            if (id == null) return NotFound();
             var userId = _userManager.GetUserId(User);
             var dbComment = await _commentRepository.GetCommentForWeekAndUser((int) id, userId);
             if (dbComment == null)

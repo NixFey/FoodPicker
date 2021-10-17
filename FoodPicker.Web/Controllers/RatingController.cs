@@ -1,17 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
-using FoodPicker.Web.Data;
 using FoodPicker.Infrastructure.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace FoodPicker.Web.Controllers
 {
@@ -19,13 +12,11 @@ namespace FoodPicker.Web.Controllers
     [Authorize]
     public class RatingController : Controller
     {
-        private readonly ILogger<RatingController> _logger;
         private readonly MealRatingRepository _mealRatingRepo;
         private readonly EfRepository<Meal> _mealRepo;
 
-        public RatingController(ILogger<RatingController> logger, MealRatingRepository mealRatingRepo, EfRepository<Meal> mealRepo)
+        public RatingController(MealRatingRepository mealRatingRepo, EfRepository<Meal> mealRepo)
         {
-            _logger = logger;
             _mealRatingRepo = mealRatingRepo;
             _mealRepo = mealRepo;
         }

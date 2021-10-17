@@ -28,7 +28,7 @@ namespace FoodPicker.Infrastructure.Services
         
         public override async Task<List<Meal>> GetMealsForMealWeek(MealWeek week)
         {
-            var config = AngleSharp.Configuration.Default.WithDefaultLoader();
+            var config = Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync(this.GetMenuUrlForMealWeek(week));
             var mealTitles = document.QuerySelectorAll("h4");

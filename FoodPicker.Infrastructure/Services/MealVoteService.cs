@@ -40,7 +40,7 @@ namespace FoodPicker.Infrastructure.Services
 
         public class VoteResult
         {
-            public double Score { get; set; } = 0.0;
+            public double Score { get; init; }
             public List<MealVote> Votes = new();
         }
 

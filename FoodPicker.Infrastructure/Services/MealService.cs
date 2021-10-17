@@ -18,7 +18,9 @@ namespace FoodPicker.Infrastructure.Services
         private readonly TimeZoneInfo _localTz;
         protected MealService(IConfiguration configuration)
         {
-            _localTz = TZConvert.GetTimeZoneInfo(configuration["TimeZone"]);
+            _localTz = !string.IsNullOrEmpty(configuration["TimeZone"])
+                ? TZConvert.GetTimeZoneInfo(configuration["TimeZone"])
+                : TimeZoneInfo.Utc;
         }
         
         public DateTime GetLocalOrderDeadlineForDeliveryDate(DateTime deliveryDate)

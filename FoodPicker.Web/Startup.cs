@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using FoodPicker.Infrastructure.Data;
 using FoodPicker.Infrastructure.Models;
 using FoodPicker.Infrastructure.Services;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using FoodPicker.Web.Data;
 using FoodPicker.Web.Enums;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -67,6 +65,8 @@ namespace FoodPicker.Web
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+                if (!Configuration.GetSection("KnownProxies").Exists()) return;
                 
                 foreach (var proxy in Configuration.GetSection("KnownProxies").Get<string[]>())
                 {
@@ -74,7 +74,13 @@ namespace FoodPicker.Web
                 }
             });
 
-            if (bool.Parse(Configuration["RedirectToHttps"]))
+            var redirectToHttps = true;
+            if (Configuration["RedirectToHttps"] != null && !bool.TryParse(Configuration["RedirectToHttps"], out redirectToHttps))
+            {
+                throw new ApplicationException(
+                    "The configuration value for `RedirectToHttps` is invalid. It should be `true` or `false`.");
+            }
+            if (redirectToHttps)
             {
                 // We're not running as HTTPS in the container, but we can trust the load balancer to be listening on 443
                 services.AddHttpsRedirection(opt =>
@@ -87,11 +93,13 @@ namespace FoodPicker.Web
             {
                 case "HelloFresh":
                     services.AddScoped<MealService, HelloFreshMealService>();
-                    // services.AddScoped<HelloFreshMealService>();
-                    // services.AddScoped<MealService>((serviceProvider) => serviceProvider.GetRequiredService<HelloFreshMealService>());
                     break;
+                case null:
+                    throw new ApplicationException("No `MealService` was provided in the configuration file");
+                default:
+                    throw new ApplicationException($"Unknown meal service {Configuration["MealService"]}");
             }
-            
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             
             var repoTypes = typeof(Repository).Assembly.GetTypes().Where(x => x.IsSubclassOf(typeof(Repository)));

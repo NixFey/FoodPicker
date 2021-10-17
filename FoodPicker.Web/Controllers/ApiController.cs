@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
 using FoodPicker.Infrastructure.Models;
-using FoodPicker.Web.Data;
+using FoodPicker.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +18,14 @@ namespace FoodPicker.Web.Controllers
         private readonly MealWeekRepository _mealWeekRepo;
         private readonly MealVoteRepository _mealVoteRepo;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly MealService _mealService;
 
-        public ApiController(MealWeekRepository mealWeekRepo, MealVoteRepository mealVoteRepo, UserManager<ApplicationUser> userManager)
+        public ApiController(MealWeekRepository mealWeekRepo, MealVoteRepository mealVoteRepo, UserManager<ApplicationUser> userManager, MealService mealService)
         {
             _mealWeekRepo = mealWeekRepo;
             _mealVoteRepo = mealVoteRepo;
             _userManager = userManager;
+            _mealService = mealService;
         }
 
         public class NextWeekResult
@@ -61,7 +63,7 @@ namespace FoodPicker.Web.Controllers
             return new NextWeekResult
             {
                 WeekStatus = week.MealWeekStatus.ToString(),
-                OrderDeadline = week.OrderDeadline,
+                OrderDeadline = _mealService.GetLocalOrderDeadlineForDeliveryDate(week.DeliveryDate),
                 PendingVotes = pendingVoteUserNames,
                 FullyVoted = fullyVotedUsernames
             };
