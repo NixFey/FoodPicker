@@ -39,7 +39,7 @@ namespace FoodPicker.Infrastructure.Data
             var ratings = _db.MealRatings.Include(x => x.Meal)
                 .Where(x => meals.Select(y => y.Name).Contains(x.Meal.Name)).AsEnumerable();
             
-            return ratings.ToLookup(x => meals.Single(y => y.Name == x.Meal.Name).Id);
+            return ratings.ToLookup(x => meals.First(y => y.Name == x.Meal.Name).Id);
         }
 
         public List<MealRating> GetPreviousRatingsForMeal(Meal meal)
