@@ -90,12 +90,16 @@ namespace FoodPicker.Infrastructure.Services
 
         public async Task<string> RefreshAuthentication()
         {
+            var oldToken = (await _configRepo.GetByCodeOrNull("HelloFreshRefreshToken"))?.Value;
+            if (oldToken == null) return null;
+            
             using var httpClient = new HttpClient();
             var refreshResult = await httpClient.PostAsync("https://www.hellofresh.com/gw/refresh",
-                new StringContent("{\"refresh_token\":\"" +
-                                  (await _configRepo.GetByCodeOrNull("HelloFreshRefreshToken")).Value + "\"}", Encoding.Default, MediaTypeNames.Application.Json));
+                new StringContent("{\"refresh_token\":\"" + oldToken + "\"}", Encoding.Default,
+                    MediaTypeNames.Application.Json));
+
             if (!refreshResult.IsSuccessStatusCode)
-                throw new ApplicationException("Unable to refresh Hello Fresh auth");
+                return null;
             
             var refreshContent = JsonSerializer.Deserialize<JsonDocument>(await refreshResult.Content.ReadAsStringAsync());
             await _configRepo.UpdateByCode("HelloFreshRefreshToken", refreshContent?.RootElement.GetProperty("refresh_token").GetString());

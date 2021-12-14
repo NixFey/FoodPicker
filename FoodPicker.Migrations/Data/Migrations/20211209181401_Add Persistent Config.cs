@@ -19,6 +19,8 @@ namespace FoodPicker.Web.Data.Migrations
                 {
                     table.PrimaryKey("PK_PersistentConfigs", x => x.Id);
                 });
+
+            migrationBuilder.InsertData("PersistentConfigs", "ConfigCode", "HelloFreshRefreshToken");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
