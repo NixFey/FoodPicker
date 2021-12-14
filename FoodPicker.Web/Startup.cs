@@ -93,6 +93,7 @@ namespace FoodPicker.Web
             {
                 case "HelloFresh":
                     services.AddScoped<MealService, HelloFreshMealService>();
+                    services.AddHostedService<HelloFreshRefreshService>();
                     break;
                 case null:
                     throw new ApplicationException("No `MealService` was provided in the configuration file");

@@ -17,5 +17,6 @@ namespace FoodPicker.Infrastructure.Data
         public DbSet<MealRating> MealRatings { get; set; }
         public DbSet<VoteOption> VoteOptions { get; set; }
         public DbSet<WeekUserComment> WeekUserComments { get; set; }
+        public DbSet<PersistentConfig> PersistentConfigs { get; set; }
     }
 }
