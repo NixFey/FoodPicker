@@ -42,7 +42,7 @@
                     <img src="@meal.ImageUrl" class="card-img-top" alt="Meal Image">
                     <div class="card-body">
                         <h5 class="card-title">@meal.Name</h5>
-                        <p class="card-text">@meal.Description</p>
+                        <p class="card-text" style="white-space: break-spaces;">@meal.Description</p>
                         @if (!string.IsNullOrEmpty(meal.Tags))
                         {
                             <span class="badge rounded-pill bg-primary">@meal.Tags</span>

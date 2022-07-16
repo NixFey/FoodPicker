@@ -2,7 +2,7 @@
 
 <img src="@Model.Meal.ImageUrl" alt="Photo of @Model.Meal.Name" style="width: 100%" />
 <h4>@Model.Meal.Name</h4>
-<p>@Model.Meal.Description</p>
+<p style="white-space: break-spaces;">@Model.Meal.Description</p>
 @if (!string.IsNullOrEmpty(Model.Meal.Tags))
 {
     <span class="badge rounded-pill bg-primary">@Model.Meal.Tags</span>

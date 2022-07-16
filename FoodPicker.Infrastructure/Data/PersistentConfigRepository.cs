@@ -22,9 +22,20 @@ namespace FoodPicker.Infrastructure.Data
         public async Task<PersistentConfig> UpdateByCode(string configCode, string value, CancellationToken cancellationToken = default)
         {
             var config = await GetByCodeOrNull(configCode, cancellationToken);
-            if (config == null) return null;
-            config.Value = value;
-            await UpdateAsync(config, cancellationToken);
+            if (config == null)
+            {
+                config = new PersistentConfig()
+                {
+                    ConfigCode = configCode,
+                    Value = value
+                };
+                await AddAsync(config, cancellationToken);
+            }
+            else
+            {
+                config.Value = value;
+                await UpdateAsync(config, cancellationToken);
+            }
 
             return config;
         }

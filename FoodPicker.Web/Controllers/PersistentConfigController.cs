@@ -18,7 +18,10 @@ namespace FoodPicker.Web.Controllers
         public PersistentConfigController(PersistentConfigRepository configRepo, MealService mealService)
         {
             _configRepo = configRepo;
-            _hfMealService = (HelloFreshMealService) mealService;
+            if (mealService is HelloFreshMealService hfMealService)
+            {
+                _hfMealService = hfMealService;
+            }
         }
 
         [HttpGet]
@@ -26,7 +29,8 @@ namespace FoodPicker.Web.Controllers
         {
             return View("Index", new PersistentConfigViewModel
             {
-                HelloFreshRefreshToken = (await _configRepo.GetByCodeOrNull("HelloFreshRefreshToken")).Value
+                HelloFreshRefreshToken = (await _configRepo.GetByCodeOrNull("HelloFreshRefreshToken"))?.Value,
+                HomeChefAccessToken = (await _configRepo.GetByCodeOrNull("HomeChefAccessToken"))?.Value
             });
         }
         
@@ -34,16 +38,24 @@ namespace FoodPicker.Web.Controllers
         public async Task<ActionResult> PostIndex([FromForm] PersistentConfigViewModel model)
         {
             await _configRepo.UpdateByCode("HelloFreshRefreshToken", model.HelloFreshRefreshToken);
-            // Refresh the token before any browser has the chance to.
-            await _hfMealService.RefreshAuthentication();
+            if (!string.IsNullOrEmpty(model.HelloFreshRefreshToken) && _hfMealService != null)
+            {
+                // Refresh the token before any browser has the chance to.
+                await _hfMealService.RefreshAuthentication();   
+            }
+
+            await _configRepo.UpdateByCode("HomeChefAccessToken", model.HomeChefAccessToken);
+
             return RedirectToAction("GetIndex");
         }
 
         public class PersistentConfigViewModel
         {
-            [Required]
             [Display(Name = "Hello Fresh Refresh Token")]
             public string HelloFreshRefreshToken { get; set; }
+            
+            [Display(Name = "Home Chef Access Token")]
+            public string HomeChefAccessToken { get; set; }
         }
     }
 }
