@@ -28,9 +28,10 @@
         <tbody>
         @foreach (var week in Model.Where(x => x.MealWeek.MealWeekStatus == MealWeekStatus.Active).OrderBy(x => x.MealWeek.DeliveryDate))
         {
+            var deliveryDeadline = _mealService.GetLocalOrderDeadlineForDeliveryDate(week.MealWeek.DeliveryDate);
             <tr>
                 <td>@week.MealWeek.DeliveryDate.ToShortDateString()</td>
-                <td>@_mealService.GetLocalOrderDeadlineForDeliveryDate(week.MealWeek.DeliveryDate).Humanize(false)</td>
+                <td><span title="@deliveryDeadline.ToString("g")">@deliveryDeadline.Humanize(false)</span></td>
                 <td>@Html.DisplayFor(x => week.MealWeek.MealWeekStatus)</td>
                 <td>@(week.CurrentUserVotingComplete ? "Yes" : "No")</td>
                 <td>

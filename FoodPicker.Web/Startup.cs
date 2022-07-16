@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
 using FoodPicker.Infrastructure.Models;
 using FoodPicker.Infrastructure.Services;
@@ -49,6 +50,23 @@ namespace FoodPicker.Web
                 options.LoginPath = "/Auth/Login";
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;
+                options.Events.OnRedirectToLogin = (ctx) =>
+                {
+                    // Allow automatic login
+                    var redirectPath = ctx.RedirectUri;
+                    if (redirectPath.Contains("?ReturnUrl"))
+                    {
+                        redirectPath += "&";
+                    }
+                    else
+                    {
+                        redirectPath += "?";
+                    }
+
+                    redirectPath += "autologin=true";
+                    ctx.Response.Redirect(redirectPath);
+                    return Task.CompletedTask;
+                };
             });
             services.AddControllersWithViews();
             

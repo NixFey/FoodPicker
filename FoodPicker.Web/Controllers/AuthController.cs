@@ -6,6 +6,7 @@ using FoodPicker.Infrastructure.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FoodPicker.Web.Controllers
@@ -15,12 +16,14 @@ namespace FoodPicker.Web.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AuthController> logger)
+        private readonly IConfiguration _configuration;
+        
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AuthController> logger, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public class LoginViewModel
@@ -33,9 +36,31 @@ namespace FoodPicker.Web.Controllers
             public string Password { get; set; }
         }
 
+        /// <summary>
+        /// If enabled automatically log the user in, or show them a form to log in. NOTE: Enabling ClaimsInHeaders when
+        /// not in front of a reverse proxy controlling those headers can be dangerous.
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="autoLogin">Whether to automatically log in. Navigate directly to /Auth/Login to force the login prompt</param>
+        /// <returns></returns>
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login([FromQuery] string returnUrl, [FromQuery] bool autoLogin = false)
         {
+            if (autoLogin && _configuration["ClaimsInHeaders"] == "True" && Request.Headers.ContainsKey("X-Token-Subject"))
+            {
+                var user = await _userManager.FindByNameAsync(Request.Headers["X-Token-Subject"]);
+                if (user != null)
+                {
+                    await _signInManager.SignInAsync(user, true);
+                    
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            
             if (!_userManager.Users.Any()) return RedirectToAction("Register");
             return View();
         }
