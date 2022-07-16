@@ -51,7 +51,9 @@ namespace FoodPicker.Web.Controllers
                 var user = await _userManager.FindByNameAsync(Request.Headers["X-Token-Subject"]);
                 if (user != null)
                 {
-                    await _signInManager.SignInAsync(user, true);
+                    // We assume that if we're being given claims that they have been properly authenticated
+                    await _signInManager.SignInWithClaimsAsync(user, true,
+                        new[] { new Claim("PasswordLogin", "true") });
                     
                     if (!string.IsNullOrEmpty(returnUrl))
                     {
