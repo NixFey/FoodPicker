@@ -11,6 +11,11 @@
 <form asp-route="@(creatingUser ? "UserCreate" : "UserEdit")" method="post" class="mb-3">
     <input type="hidden" asp-for="Id" />
     <div class="mb-3">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div class="mb-3">
         <label asp-for="Username"></label>
         <input asp-for="Username" class="form-control"/>
         <span asp-validation-for="Username"></span>

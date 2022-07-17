@@ -32,6 +32,9 @@ namespace FoodPicker.Web.Controllers
             public string Id { get; set; }
             
             [Required]
+            public string Name { get; set; }
+            
+            [Required]
             public string Username { get; set; }
             
             [DataType(DataType.Password)]
@@ -61,6 +64,7 @@ namespace FoodPicker.Web.Controllers
                 model = new UserViewModel
                 {
                     Id = user.Id,
+                    Name = user.Name,
                     Username = user.UserName,
                     Password = null,
                     IsAdmin = await _userManager.IsInRoleAsync(user, "Admin"),
@@ -91,6 +95,7 @@ namespace FoodPicker.Web.Controllers
             else
             {
                 dbModel = await _userManager.FindByIdAsync(id);
+                dbModel.Name = model.Name;
                 dbModel.UserName = model.Username;
                 dbModel.VoteIsRequired = model.VoteIsRequired;
                 await _userManager.UpdateAsync(dbModel);

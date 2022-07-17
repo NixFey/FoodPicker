@@ -104,6 +104,9 @@ namespace FoodPicker.Web.Controllers
         public class RegisterViewModel
         {
             [Required]
+            public string Name { get; set; }
+            
+            [Required]
             public string Username { get; set; }
             
             [Required]
@@ -129,6 +132,7 @@ namespace FoodPicker.Web.Controllers
             }
             var createResult = await _userManager.CreateAsync(new ApplicationUser()
             {
+                Name = model.Name,
                 UserName = model.Username,
                 VoteIsRequired = true,
             }, model.Password);

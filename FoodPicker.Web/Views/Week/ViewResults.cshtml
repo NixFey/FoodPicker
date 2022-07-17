@@ -22,7 +22,7 @@
             <div class="card-body">
                 @foreach (var comment in Model.UserComments)
                 {
-                    <p><b>@comment.User.UserName</b> - @comment.Comment</p>
+                    <p><b>@comment.User.Name</b> - @comment.Comment</p>
                 }
             </div>
         </div>
@@ -41,7 +41,7 @@
                 <th>Name</th>
                 @foreach (var user in Model.ParticipatingUsers)
                 {
-                    <th>@user.UserName</th>
+                    <th>@user.Name</th>
                 }
                 <th>Score</th>
                 <th>Selected</th>

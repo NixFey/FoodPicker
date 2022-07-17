@@ -54,18 +54,18 @@ namespace FoodPicker.Web.Controllers
             
             var users = _userManager.Users.ToList();
 
-            var fullyVotedUsernames =
-                users.Where(x => fullyVotedUserIds.Contains(x.Id)).Select(x => x.UserName).ToList();
+            var fullyVotedNames =
+                users.Where(x => fullyVotedUserIds.Contains(x.Id)).Select(x => x.Name).ToList();
 
-            var pendingVoteUserNames = users.Where(x => !fullyVotedUserIds.Contains(x.Id) && x.VoteIsRequired)
-                .Select(x => x.UserName).ToList();
+            var pendingVoteNames = users.Where(x => !fullyVotedUserIds.Contains(x.Id) && x.VoteIsRequired)
+                .Select(x => x.Name).ToList();
 
             return new NextWeekResult
             {
                 WeekStatus = week.MealWeekStatus.ToString(),
                 OrderDeadline = _mealService.GetLocalOrderDeadlineForDeliveryDate(week.DeliveryDate),
-                PendingVotes = pendingVoteUserNames,
-                FullyVoted = fullyVotedUsernames
+                PendingVotes = pendingVoteNames,
+                FullyVoted = fullyVotedNames
             };
         }
     }
