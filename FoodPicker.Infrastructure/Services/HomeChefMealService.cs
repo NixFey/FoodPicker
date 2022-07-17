@@ -44,7 +44,7 @@ namespace FoodPicker.Infrastructure.Services
             if (string.IsNullOrEmpty(token)) throw new ApplicationException("Access token not provided");
             
             var deliveryDate = week.DeliveryDate;
-            var slugDate = StartOfWeek(deliveryDate.AddDays(-7), DayOfWeek.Monday);
+            var slugDate = StartOfWeek(deliveryDate, DayOfWeek.Monday);
             var menuUrl = "https://www.homechef.com/api/v2/menus/" + slugDate.ToString("dd-MMM-yyyy").ToLower();
             
             using var httpClient = new HttpClient();
