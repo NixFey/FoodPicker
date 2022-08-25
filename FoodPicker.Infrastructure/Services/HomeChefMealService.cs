@@ -84,6 +84,7 @@ namespace FoodPicker.Infrastructure.Services
                     Name = mealElement.GetProperty("title").GetString(),
                     Description = description,
                     ImageUrl = mealElement.GetProperty("photo").GetString(),
+                    Url = mealElement.GetProperty("url").GetString(),
                     Tags = mealElement.GetProperty("primary_label").GetString()
                 };
                 

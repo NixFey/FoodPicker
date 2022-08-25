@@ -30,6 +30,10 @@
                         <div class="card-body">
                             <h5 class="card-title">@meal.Name</h5>
                             <p class="card-text" style="white-space: break-spaces;">@meal.Description</p>
+                            @if (!string.IsNullOrWhiteSpace(meal.Url))
+                            {
+                                <p><a href="@meal.Url">View on @_mealService.MealServiceName</a></p>
+                            }
                             @if (!string.IsNullOrEmpty(meal.Tags))
                             {
                                 <span class="badge rounded-pill bg-primary">@meal.Tags</span>

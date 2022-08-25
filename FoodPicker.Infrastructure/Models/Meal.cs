@@ -17,6 +17,7 @@ namespace FoodPicker.Infrastructure.Models
         [Required]
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public string Url { get; set; }
         
         public bool? SelectedForOrder { get; set; }
 
