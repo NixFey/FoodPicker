@@ -13,7 +13,7 @@
 @if (Model.MealWeek.CanVote)
 {
     <a href="@_mealService.GetMenuUrlForMealWeek(Model.MealWeek)">View on @_mealService.MealServiceName</a>
-    <form asp-action="Vote" asp-route-id="@Model.MealWeek.Id" method="post" class="mb-3">
+    <form asp-action="Vote" asp-route-id="@Model.MealWeek.Id" method="post" class="mb-3 voteForm">
         <div class="mb-3">
             <label asp-for="WeekUserComment"></label>
             <textarea asp-for="WeekUserComment" class="form-control"></textarea>
@@ -79,4 +79,28 @@ else
             })
         </script>
     }
+
+    <script>
+    const form = document.querySelector('.voteForm');
+    
+    function setBorder(card) {
+        if (card.querySelectorAll('input[type=radio]:checked').length === 0) {
+            card.style.borderColor = 'orange';
+            card.style.borderStyle = 'solid';
+            card.style.borderWidth = '5px';
+        } else {
+            card.style.borderColor = null;
+            card.style.borderStyle = null;
+            card.style.borderWidth = null;
+        }
+    }
+    
+    form.querySelectorAll('.card').forEach(x => {x.addEventListener('click', () => setBorder(x)); setBorder(x);});
+    </script>
 }
+
+<style>
+    .voteForm .card {
+        transition: border-width 0.25s ease;
+    }
+</style>
