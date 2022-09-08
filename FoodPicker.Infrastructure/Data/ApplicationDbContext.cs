@@ -18,5 +18,6 @@ namespace FoodPicker.Infrastructure.Data
         public DbSet<VoteOption> VoteOptions { get; set; }
         public DbSet<WeekUserComment> WeekUserComments { get; set; }
         public DbSet<PersistentConfig> PersistentConfigs { get; set; }
+        public DbSet<AutoVote> AutoVotes { get; set; }
     }
 }

@@ -136,7 +136,9 @@ namespace FoodPicker.Web.Controllers
                 await _mealRepo.DeleteRangeAsync(week.Meals);
                 await _mealRepo.AddRangeAsync(meals);
                 week.MealWeekStatus = MealWeekStatus.Active;
-                await _mealWeekRepo.UpdateAsync(week);   
+                await _mealWeekRepo.UpdateAsync(week);
+
+                await _mealVoteService.ProcessAutoVotes(week);
             }
 
             return RedirectToRoute("WeekEdit", new {id});

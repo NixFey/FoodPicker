@@ -1,0 +1,57 @@
+@page
+@using Microsoft.CodeAnalysis.Options
+@model AutoVoteModel
+@{
+    ViewData["Title"] = "Manage AutoVote";
+    ViewData["ActivePage"] = ManageNavPages.AutoVote;
+}
+
+<h4>@ViewData["Title"]</h4>
+<p>Changing these settings will not modify any votes that have already been cast.</p>
+@* ReSharper disable once Mvc.PartialViewNotResolved *@
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="autovote-form" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                @foreach (var option in Model.VoteOptions)
+                {
+                    <div class="voteOption" data-voteOptionId="@option.Id">
+                        <h3>@option.Name</h3>
+                        <div class="autoVotes">
+                            @foreach (var autoVote in Model.AutoVotesViewModel?[option.Id] ?? new List<string>())
+                            {
+                                <div class="item align-items-center row">
+                                    <div class="col-auto"><input class="form-control" type="text" name="AutoVotesViewModel[@option.Id][]" value="@autoVote"/></div>
+                                    <div class="col-auto"><button class="btn btn-danger" type="button" onclick="removeAutoVote(this)">Remove</button></div>
+                                </div>
+                            }
+                        </div>
+                        <button onclick="addAutoVoteField(this)" class="btn btn-secondary mt-3" type="button">Add</button>
+                    </div>
+                }
+                @* Awful terrible hack that I hate. ModelBinder panics if the dictionary of AutoVotes is empty *@
+                <input type="hidden" name="AutoVotesViewModel[99999][]" value="IGNORE ME"/>
+            </div>
+            <button class="btn btn-primary mt-4" type="submit">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+    <script>
+        function addAutoVoteField(event) {
+            var parent = event.closest('.voteOption');
+            var voteOptionId = parent.dataset['voteoptionid'];
+            var name = "AutoVotesViewModel[" + voteOptionId + "][]";
+            
+            parent.querySelector('.autoVotes').insertAdjacentHTML('beforeend', `<div class="item align-items-center row"><div class="col-auto"><input name="${name}" class="form-control"/></div><div class="col-auto"><button class="btn btn-danger" type="button" onclick="removeAutoVote(this)">Remove</button></div></div>`);
+        }
+        
+        function removeAutoVote(event) {
+            event.closest('.item').remove();
+        }
+    </script>
+}

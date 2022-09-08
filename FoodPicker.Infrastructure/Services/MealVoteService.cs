@@ -13,14 +13,18 @@ namespace FoodPicker.Infrastructure.Services
         private readonly IMemoryCache _cache;
         private readonly EfRepository<VoteOption> _optionRepo;
         private readonly MealVoteRepository _voteRepo;
+        private readonly MealWeekRepository _weekRepo;
         private readonly EfRepository<Meal> _mealRepo;
+        private readonly AutoVoteRepository _autoVoteRepo;
 
-        public MealVoteService(IMemoryCache cache, EfRepository<VoteOption> optionRepo, MealVoteRepository voteRepo, EfRepository<Meal> mealRepo)
+        public MealVoteService(IMemoryCache cache, EfRepository<VoteOption> optionRepo, MealVoteRepository voteRepo, EfRepository<Meal> mealRepo, MealWeekRepository weekRepo, AutoVoteRepository autoVoteRepo)
         {
             _cache = cache;
             _optionRepo = optionRepo;
             _voteRepo = voteRepo;
             _mealRepo = mealRepo;
+            _weekRepo = weekRepo;
+            _autoVoteRepo = autoVoteRepo;
         }
 
         private async Task<double> VoteOptionToWeightAsync(VoteOption option)
@@ -85,6 +89,55 @@ namespace FoodPicker.Infrastructure.Services
             var numMeals = await _mealRepo.CountAsync(x => x.MealWeekId == week.Id);
 
             return numUserVotes >= numMeals;
+        }
+
+        public async Task ProcessAutoVotes(MealWeek weekToUse = null, string userId = null)
+        {
+            // TODO: This whole algorithm can be improved. It was a last-minute addition to be fixed later
+            var weeks = new List<MealWeek>();
+            if (weekToUse is not null)
+            {
+                weeks.Add(weekToUse);
+            }
+            else
+            {
+                weeks.AddRange(await _weekRepo.ListAsync(x => x.MealWeekStatus == MealWeekStatus.Active));
+            }
+
+            IEnumerable<AutoVote> autoVotes;
+            if (userId is not null)
+            {
+                autoVotes = await _autoVoteRepo.ListAsync(x => x.UserId == userId);
+            }
+            else
+            {
+                autoVotes = await _autoVoteRepo.ListAllAsync();
+            }
+
+            foreach (var week in weeks)
+            {
+                var votes = await _voteRepo.GetAllVotesForWeekAsync(week);
+                var meals = (await _weekRepo.GetByIdWithMealsAsync(week.Id)).Meals;
+
+                foreach (var meal in meals)
+                {
+                    foreach (var autoVote in autoVotes)
+                    {
+                        if (votes.Any(x => x.MealId == meal.Id && x.UserId == autoVote.UserId)) continue;
+                        if (meal.Description.Contains(autoVote.Keyword, StringComparison.CurrentCultureIgnoreCase) || meal.Name.Contains(autoVote.Keyword, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            await _voteRepo.AddAsync(new MealVote()
+                            {
+                                MealId = meal.Id,
+                                UserId = autoVote.UserId,
+                                VoteOptionId = autoVote.VoteOptionId
+                            });
+                            // Only care about the first match
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
