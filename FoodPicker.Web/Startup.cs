@@ -77,6 +77,18 @@ namespace FoodPicker.Web
                     pol.RequireRole("Admin");
                     pol.RequireClaim("PasswordLogin", "true");
                 });
+
+                // NOTE: Enabling the API allows clients to perform actions without authenticating first. Ensure your
+                // installation is secure before setting the "EnableApi" config setting to true
+                if (!bool.TryParse(Configuration["EnableApi"], out var apiIsEnabled))
+                {
+                    apiIsEnabled = false;
+                }
+                
+                opt.AddPolicy(AuthorizationPolicies.AllowApi, pol =>
+                {
+                    pol.RequireAssertion((_) => apiIsEnabled);
+                });
             });
             
             services.Configure<ForwardedHeadersOptions>(options =>

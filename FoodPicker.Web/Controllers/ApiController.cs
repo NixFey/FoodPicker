@@ -5,27 +5,33 @@ using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
 using FoodPicker.Infrastructure.Models;
 using FoodPicker.Infrastructure.Services;
+using FoodPicker.Web.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FoodPicker.Web.Controllers
 {
-    [AllowAnonymous]
     [Route("[controller]")]
+    [Authorize(Policy = AuthorizationPolicies.AllowApi)]
     public class ApiController : Controller
     {
         private readonly MealWeekRepository _mealWeekRepo;
         private readonly MealVoteRepository _mealVoteRepo;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly MealService _mealService;
+        private readonly MealVoteService _mealVoteService;
+        private readonly ILogger<ApiController> _logger;
 
-        public ApiController(MealWeekRepository mealWeekRepo, MealVoteRepository mealVoteRepo, UserManager<ApplicationUser> userManager, MealService mealService)
+        public ApiController(MealWeekRepository mealWeekRepo, MealVoteRepository mealVoteRepo, UserManager<ApplicationUser> userManager, MealService mealService, ILogger<ApiController> logger, MealVoteService mealVoteService)
         {
             _mealWeekRepo = mealWeekRepo;
             _mealVoteRepo = mealVoteRepo;
             _userManager = userManager;
             _mealService = mealService;
+            _logger = logger;
+            _mealVoteService = mealVoteService;
         }
 
         public class NextWeekResult
@@ -67,6 +73,41 @@ namespace FoodPicker.Web.Controllers
                 PendingVotes = pendingVoteNames,
                 FullyVoted = fullyVotedNames
             };
+        }
+
+        /// <remarks>
+        /// NOTE: This endpoint creates new weeks. In my home setup, this is behind a WAF and cannot be called except
+        /// for trusted clients. If you're running this at home, beware.
+        /// </remarks>
+        /// <returns></returns>
+        [HttpPost("[action]")]
+        public async Task<ActionResult> TryCreateNewWeek()
+        {
+            var latestMealWeek = await _mealWeekRepo.GetLatest();
+            var week = new MealWeek
+            {
+                DeliveryDate = latestMealWeek?.DeliveryDate.AddDays(7) ?? DateTime.Today,
+                MealWeekStatus = MealWeekStatus.Active
+            };
+
+            try
+            {
+                var mealsForNextDelivery = await _mealService.GetMealsForMealWeek(week);
+                if (mealsForNextDelivery.Count == 0)
+                    throw new ApplicationException("No meals reported from meal service");
+
+                week.Meals = mealsForNextDelivery;
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("Unable to create next week: failed to fetch meals", e);
+                return NoContent();
+            }
+
+            await _mealWeekRepo.AddAsync(week);
+            await _mealVoteService.ProcessAutoVotes(week);
+
+            return Ok();
         }
     }
 }
