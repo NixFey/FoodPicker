@@ -55,7 +55,7 @@ namespace FoodPicker.Web.Controllers
 
             var fullyVotedUserIds = from v in mealVotes
                 group v by v.UserId into u
-                where u.Count() == numMeals
+                where u.Count() >= numMeals
                 select u.Key;
             
             var users = _userManager.Users.ToList();
