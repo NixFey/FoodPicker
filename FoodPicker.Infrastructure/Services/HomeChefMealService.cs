@@ -94,7 +94,7 @@ namespace FoodPicker.Infrastructure.Services
             return meals;
         }
 
-        protected override DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate)
+        public override DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate)
         {
             var centralTime = TZConvert.GetTimeZoneInfo("America/Chicago");
             var subtractedDelivery = StartOfWeek(deliveryDate, DayOfWeek.Friday);

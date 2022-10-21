@@ -19,5 +19,12 @@ namespace FoodPicker.Infrastructure.Data
         public DbSet<WeekUserComment> WeekUserComments { get; set; }
         public DbSet<PersistentConfig> PersistentConfigs { get; set; }
         public DbSet<AutoVote> AutoVotes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<MealVote>()
+                .HasIndex(p => new { p.MealId, p.UserId }).IsUnique();
+        }
     }
 }

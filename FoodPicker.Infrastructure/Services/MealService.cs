@@ -13,7 +13,7 @@ namespace FoodPicker.Infrastructure.Services
 
         public abstract string GetMenuUrlForMealWeek(MealWeek week);
         public abstract Task<List<Meal>> GetMealsForMealWeek(MealWeek week);
-        protected abstract DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate);
+        public abstract DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate);
 
         private readonly TimeZoneInfo _localTz;
         protected MealService(IConfiguration configuration)
@@ -27,7 +27,7 @@ namespace FoodPicker.Infrastructure.Services
         {
             var utcDeadline = GetUtcOrderDeadlineForDeliveryDate(deliveryDate);
             var localDeadline = TimeZoneInfo.ConvertTimeFromUtc(utcDeadline, _localTz);
-            return localDeadline;
+            return DateTime.SpecifyKind(localDeadline, DateTimeKind.Local);
         }
     }
 }

@@ -68,7 +68,7 @@ namespace FoodPicker.Infrastructure.Services
             return meals;
         }
 
-        protected override DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate)
+        public override DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate)
         {
             // Hello fresh orders are due at 11:59 PM Pacific Time 5 days before the delivery
             var subtractedDelivery = deliveryDate.AddDays(-5);
