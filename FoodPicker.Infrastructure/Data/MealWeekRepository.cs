@@ -32,8 +32,8 @@ namespace FoodPicker.Infrastructure.Data
             return (await DbContext.MealWeeks.OrderBy(x => x.DeliveryDate).Include(x => x.Meals)
                 .ToListAsync(cancellationToken)).FirstOrDefault(x =>
             {
-                var orderDeadline = _mealService.GetLocalOrderDeadlineForDeliveryDate(x.DeliveryDate);
-                return orderDeadline > DateTime.Now && orderDeadline < DateTime.Now.AddDays(7);
+                var orderDeadline = _mealService.GetUtcOrderDeadlineForDeliveryDate(x.DeliveryDate);
+                return orderDeadline > DateTime.UtcNow && orderDeadline < DateTime.UtcNow.AddDays(7);
             });
         }
 
