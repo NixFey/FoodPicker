@@ -69,7 +69,7 @@ namespace FoodPicker.Web.Controllers
             return new NextWeekResult
             {
                 WeekStatus = week.MealWeekStatus.ToString(),
-                OrderDeadline = _mealService.GetLocalOrderDeadlineForDeliveryDate(week.DeliveryDate),
+                OrderDeadline = _mealService.GetUtcOrderDeadlineForDeliveryDate(week.DeliveryDate),
                 PendingVotes = pendingVoteNames,
                 FullyVoted = fullyVotedNames
             };
