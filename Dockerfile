@@ -1,5 +1,5 @@
 ﻿# https://hub.docker.com/_/microsoft-dotnet
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /source
 
 # copy csproj and restore as distinct layers
@@ -18,7 +18,7 @@ WORKDIR /source/FoodPicker.Web
 RUN dotnet publish -c release -o /app 
 
 # final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 EXPOSE 80
 COPY --from=build /app ./
