@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using FoodPicker.Infrastructure.Data;
 using FoodPicker.Infrastructure.Models;
+using Humanizer;
 using Microsoft.Extensions.Configuration;
 using TimeZoneConverter;
 
@@ -61,23 +62,25 @@ namespace FoodPicker.Infrastructure.Services
             var meals = new List<Meal>();
             foreach (var mealElement in mealResponse.RootElement.GetProperty("meals").EnumerateArray())
             {
-                if (new [] { "extras", "bundle-and-save" }.Contains(mealElement.GetProperty("menu_category")
+                if (new [] { "extras", "bundle-and-save", "lunch" }.Contains(mealElement.GetProperty("menu_category")
                         .GetString()))
                 {
                     continue;
                 }
                 var mealId = mealElement.GetProperty("id").GetString() ?? "";
                 var description = mealElement.GetProperty("subtitle").GetString();
-                if (mealOptions.ContainsKey(mealId))
+                if (mealOptions.TryGetValue(mealId, out var option))
                 {
-                    var mealOptionGroup = mealOptions[mealId];
-                    description += $"\n{mealOptionGroup.GetProperty("title").GetString()}";
-                    foreach (var mealOption in mealOptionGroup.GetProperty("meal_options").EnumerateArray())
+                    description += $"\n{option.GetProperty("title").GetString()}";
+                    foreach (var mealOption in option.GetProperty("meal_options").EnumerateArray())
                     {
                         description += $"\n - {mealOption.GetProperty("display_name").GetString()}";
                     }
                 }
 
+                var tags = new List<string> { mealElement.GetProperty("primary_label").GetString() };
+                tags.AddRange(mealElement.GetProperty("tags").EnumerateArray().Select(t => t.GetString().Transform(To.TitleCase)));
+    
                 var meal = new Meal()
                 {
                     MealWeekId = week.Id,
@@ -85,7 +88,7 @@ namespace FoodPicker.Infrastructure.Services
                     Description = description,
                     ImageUrl = mealElement.GetProperty("photo").GetString(),
                     Url = mealElement.GetProperty("url").GetString(),
-                    Tags = mealElement.GetProperty("primary_label").GetString()
+                    Tags = string.Join(';', tags.Where(t => !string.IsNullOrEmpty(t)))
                 };
                 
                 meals.Add(meal);

@@ -11,7 +11,10 @@
 }
 @if (!string.IsNullOrEmpty(Model.Meal.Tags))
 {
-    <span class="badge rounded-pill bg-primary">@Model.Meal.Tags</span>
+    foreach (var tag in Model.Meal.Tags.Split(';'))
+    {
+        <span class="badge rounded-pill bg-primary">@tag</span>
+    }
 }
 
 @if (Model.PreviousRatings.Any())
