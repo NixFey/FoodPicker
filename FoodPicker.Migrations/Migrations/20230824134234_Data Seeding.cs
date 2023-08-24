@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FoodPicker.Web.Data.Migrations
+#nullable disable
+
+namespace FoodPicker.Migrations.Migrations
 {
-    public partial class VoteOptionInitializeData : Migration
+    public partial class DataSeeding : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

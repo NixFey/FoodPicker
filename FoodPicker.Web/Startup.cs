@@ -30,10 +30,17 @@ namespace FoodPicker.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new ApplicationException(
+                    "A DefaultConnection configuration string for MySQL must be provided.");
+            }
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
-                    Configuration.GetConnectionString("DefaultConnection"),
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
                     x => x.MigrationsAssembly("FoodPicker.Migrations")));
+                
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()

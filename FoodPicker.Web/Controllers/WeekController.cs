@@ -211,7 +211,9 @@ namespace FoodPicker.Web.Controllers
             {
                 if (dbVote.Id == 0)
                 {
-                    await _mealVoteRepo.AddAsync(dbVote);
+                    // If there's no real data in the vote, no point in storing it.
+                    if (dbVote.VoteOptionId != null || !string.IsNullOrEmpty(dbVote.Comment))
+                        await _mealVoteRepo.AddAsync(dbVote);
                 }
                 else
                 {

@@ -23,7 +23,7 @@ namespace FoodPicker.Infrastructure.Data
 
         public async Task<List<MealVote>> GetUserVotesForWeekAsync(MealWeek week, string userId, CancellationToken cancellationToken = default)
         {
-            return await _db.MealVotes.Where(x => x.UserId == userId && x.Meal.MealWeekId == week.Id && x.VoteOption != null)
+            return await _db.MealVotes.Where(x => x.UserId == userId && x.Meal.MealWeekId == week.Id)
                 .ToListAsync(cancellationToken);
         }
         
