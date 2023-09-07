@@ -44,6 +44,7 @@ namespace FoodPicker.Web.Controllers
             public bool IsAdmin { get; set; }
 
             [Required] public bool VoteIsRequired { get; set; } = true;
+            [Required] public bool IsActive { get; set; } = true;
         }
         
         [HttpGet]
@@ -68,7 +69,8 @@ namespace FoodPicker.Web.Controllers
                     Username = user.UserName,
                     Password = null,
                     IsAdmin = await _userManager.IsInRoleAsync(user, "Admin"),
-                    VoteIsRequired = user.VoteIsRequired
+                    VoteIsRequired = user.VoteIsRequired,
+                    IsActive = user.IsActive,
                 };
             }
             return View(model);
@@ -87,8 +89,10 @@ namespace FoodPicker.Web.Controllers
                 dbModel = new ApplicationUser
                 {
                     Id = Guid.NewGuid().ToString(),
+                    Name = model.Name,
                     UserName = model.Username,
-                    VoteIsRequired = model.VoteIsRequired
+                    VoteIsRequired = model.VoteIsRequired,
+                    IsActive = model.IsActive,
                 };
                 await _userManager.CreateAsync(dbModel);
             }
@@ -98,6 +102,7 @@ namespace FoodPicker.Web.Controllers
                 dbModel.Name = model.Name;
                 dbModel.UserName = model.Username;
                 dbModel.VoteIsRequired = model.VoteIsRequired;
+                dbModel.IsActive = model.IsActive;
                 await _userManager.UpdateAsync(dbModel);
             }
             

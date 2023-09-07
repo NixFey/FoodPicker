@@ -251,7 +251,7 @@ namespace FoodPicker.Web.Controllers
             var model = new ViewResultsViewModel
             {
                 Week = week,
-                ParticipatingUsers = await _userManager.Users.ToListAsync(),
+                ParticipatingUsers = await _userManager.Users.Where(u => u.IsActive).ToListAsync(),
                 IsEditable = week.CanVote,
                 UserComments = await _commentRepository.GetCommentsForWeek((int) weekId)
             };

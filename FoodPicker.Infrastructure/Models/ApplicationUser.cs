@@ -8,5 +8,6 @@ namespace FoodPicker.Infrastructure.Models
         [Required]
         public string Name { get; set; }
         public bool VoteIsRequired { get; set; } = true;
+        public bool IsActive { get; set; } = true;
     }
 }

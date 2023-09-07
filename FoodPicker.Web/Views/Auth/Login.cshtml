@@ -1,11 +1,11 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @model FoodPicker.Web.Controllers.AuthController.LoginViewModel
-@inject UserManager<ApplicationUser> _userManager
+@inject UserManager<ApplicationUser> UserManager
 
 <form method="post">
     @{
-        var users = await _userManager.Users.ToListAsync();
+        var users = await UserManager.Users.Where(u => u.IsActive).ToListAsync();
     }
     <div class="mb-3">
         <label asp-for="UserId"></label>
@@ -13,9 +13,10 @@
             <option value="null">-- Select --</option>
             @foreach (var user in users)
             {
-                <option value="@user.Id" data-isadmin="@(await _userManager.IsInRoleAsync(user, "Admin"))">@user.UserName</option>
+                <option value="@user.Id" data-isadmin="@(await UserManager.IsInRoleAsync(user, "Admin"))">@user.UserName</option>
             }
         </select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
     </div>
     
     <div class="mb-3 d-none" id="password-field">

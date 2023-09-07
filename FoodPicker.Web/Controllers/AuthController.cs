@@ -17,8 +17,9 @@ namespace FoodPicker.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
-        
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AuthController> logger, IConfiguration configuration)
+
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            ILogger<AuthController> logger, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -28,12 +29,9 @@ namespace FoodPicker.Web.Controllers
 
         public class LoginViewModel
         {
-            [Required]
-            [Display(Name="User")]
-            public string UserId { get; set; }
-            
-            [Display(Name="Password")]
-            public string Password { get; set; }
+            [Required] [Display(Name = "User")] public string UserId { get; set; }
+
+            [Display(Name = "Password")] public string Password { get; set; }
         }
 
         /// <summary>
@@ -46,38 +44,46 @@ namespace FoodPicker.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Login([FromQuery] string returnUrl, [FromQuery] bool autoLogin = false)
         {
-            if (autoLogin && _configuration["ClaimsInHeaders"] == "True" && Request.Headers.ContainsKey("X-Token-Subject"))
+            if (autoLogin
+                && bool.TryParse(_configuration["ClaimsInHeaders"], out var claimsInHeaders) && claimsInHeaders
+                && Request.Headers.TryGetValue("X-Token-Subject", out var subject))
             {
-                var user = await _userManager.FindByNameAsync(Request.Headers["X-Token-Subject"]);
-                if (user != null)
+                var user = await _userManager.FindByNameAsync(subject);
+                if (user is { IsActive: true })
                 {
                     // We assume that if we're being given claims that they have been properly authenticated
                     await _signInManager.SignInWithClaimsAsync(user, true,
                         new[] { new Claim("PasswordLogin", "true") });
-                    
+
                     if (!string.IsNullOrEmpty(returnUrl))
                     {
                         return LocalRedirect(returnUrl);
                     }
+
                     return RedirectToAction("Index", "Home");
                 }
             }
-            
+
             if (!_userManager.Users.Any()) return RedirectToAction("Register");
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Login([FromForm] LoginViewModel model, [FromQuery] string returnUrl)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
+            if (!user.IsActive)
+            {
+                ModelState.AddModelError("UserId", "User Invalid");
+                return View();
+            }
             if (!string.IsNullOrEmpty(model.Password) && await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 // Password login
                 if (await _userManager.CheckPasswordAsync(user, model.Password))
                 {
                     await _signInManager.SignInWithClaimsAsync(user, false,
-                            new[] { new Claim("PasswordLogin", "true") });
+                        new[] { new Claim("PasswordLogin", "true") });
                 }
                 else
                 {
@@ -93,27 +99,26 @@ namespace FoodPicker.Web.Controllers
                     IsPersistent = true
                 });
             }
-            
+
             if (!string.IsNullOrEmpty(returnUrl))
             {
                 return LocalRedirect(returnUrl);
             }
+
             return RedirectToAction("Index", "Home");
         }
-        
+
         public class RegisterViewModel
         {
-            [Required]
-            public string Name { get; set; }
-            
-            [Required]
-            public string Username { get; set; }
-            
+            [Required] public string Name { get; set; }
+
+            [Required] public string Username { get; set; }
+
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
         }
-        
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -121,7 +126,7 @@ namespace FoodPicker.Web.Controllers
 
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] RegisterViewModel model)
         {
@@ -130,11 +135,13 @@ namespace FoodPicker.Web.Controllers
             {
                 return View();
             }
+
             var createResult = await _userManager.CreateAsync(new ApplicationUser()
             {
                 Name = model.Name,
                 UserName = model.Username,
                 VoteIsRequired = true,
+                IsActive = true,
             }, model.Password);
             if (!createResult.Succeeded)
             {
@@ -146,7 +153,7 @@ namespace FoodPicker.Web.Controllers
 
                 _logger.LogError("Error creating user: {Error}", string.Join(", ", createResult.Errors));
             }
-            
+
             var user = await _userManager.FindByNameAsync(model.Username);
             await _userManager.AddPasswordAsync(user, model.Password);
             await _userManager.AddToRoleAsync(user, "Admin");

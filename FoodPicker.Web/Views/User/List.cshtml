@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Identity
 @model List<ApplicationUser>
-@inject UserManager<ApplicationUser> _userManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewBag.Title = "User List";
@@ -16,6 +16,7 @@
         <tr>
             <th>Name</th>
             <th>Username</th>
+            <th>Is Active?</th>
             <th>Is Admin?</th>
             <th>Vote Required?</th>
             <th>Actions</th>
@@ -27,7 +28,8 @@
             <tr>
                 <td>@user.Name</td>
                 <td>@user.UserName</td>
-                <td>@((await _userManager.IsInRoleAsync(user, "Admin")) ? "Yes" : "No")</td>
+                <td>@(user.IsActive ? "Yes" : "No")</td>
+                <td>@((await UserManager.IsInRoleAsync(user, "Admin")) ? "Yes" : "No")</td>
                 <td>@(user.VoteIsRequired ? "Yes" : "No")</td>
                 <td>
                     <a asp-route="UserEdit" asp-route-id="@user.Id">Edit</a>

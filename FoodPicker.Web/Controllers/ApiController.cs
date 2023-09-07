@@ -58,7 +58,7 @@ namespace FoodPicker.Web.Controllers
                 where u.Count() >= numMeals
                 select u.Key;
             
-            var users = _userManager.Users.ToList();
+            var users = _userManager.Users.Where(u => u.IsActive).ToList();
 
             var fullyVotedNames =
                 users.Where(x => fullyVotedUserIds.Contains(x.Id)).Select(x => x.Name).ToList();
