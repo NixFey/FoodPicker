@@ -5,7 +5,7 @@
 
 <form method="post">
     @{
-        var users = await UserManager.Users.Where(u => u.IsActive).ToListAsync();
+        var users = await UserManager.Users.Where(u => u.IsActive).OrderBy(u => u.Name).ToListAsync();
     }
     <div class="mb-3">
         <label asp-for="UserId"></label>

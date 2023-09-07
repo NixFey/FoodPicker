@@ -27,7 +27,10 @@ namespace FoodPicker.Web.Controllers
         private readonly MealVoteService _mealVoteService;
         private readonly WeekUserCommentRepository _commentRepository;
 
-        public WeekController(UserManager<ApplicationUser> userManager, MealService mealService, MealWeekRepository mealWeekRepo, EfRepository<Meal> mealRepo, MealVoteRepository mealVoteRepo, MealVoteService mealVoteService, MealRatingRepository mealRatingRepo, WeekUserCommentRepository commentRepository)
+        public WeekController(UserManager<ApplicationUser> userManager, MealService mealService,
+            MealWeekRepository mealWeekRepo, EfRepository<Meal> mealRepo, MealVoteRepository mealVoteRepo,
+            MealVoteService mealVoteService, MealRatingRepository mealRatingRepo,
+            WeekUserCommentRepository commentRepository)
         {
             _userManager = userManager;
             _mealService = mealService;
@@ -44,12 +47,12 @@ namespace FoodPicker.Web.Controllers
             public MealWeek MealWeek { get; set; }
             public bool CurrentUserVotingComplete { get; set; }
         }
-        
+
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var mealWeeks = await _mealWeekRepo.ListAllAsync();
-            
+
             var viewModel = new List<WeekListViewModel>();
             foreach (var mealWeek in mealWeeks)
             {
@@ -60,10 +63,10 @@ namespace FoodPicker.Web.Controllers
                         await _mealVoteService.IsVotingCompleteForUserForWeek(mealWeek, _userManager.GetUserId(User))
                 });
             }
-            
+
             return View("List", viewModel);
-        } 
-        
+        }
+
         [HttpGet]
         [Route("Create")]
         [Route("{id:int}")]
@@ -84,14 +87,14 @@ namespace FoodPicker.Web.Controllers
             else
             {
                 // Editing
-                model = await _mealWeekRepo.GetByIdWithMealsAsync((int) id);
+                model = await _mealWeekRepo.GetByIdWithMealsAsync((int)id);
 
                 if (model == null) throw new ApplicationException("Week not found");
             }
-            
+
             return View(model);
-        } 
-        
+        }
+
         [HttpPost]
         [Route("Create", Name = "WeekCreate")]
         [Route("{id:int}", Name = "WeekEdit")]
@@ -106,27 +109,27 @@ namespace FoodPicker.Web.Controllers
                     DeliveryDate = model.DeliveryDate,
                     MealWeekStatus = model.MealWeekStatus,
                 };
-                
+
                 await _mealWeekRepo.AddAsync(dbModel);
             }
             else
             {
-                dbModel = await _mealWeekRepo.GetByIdAsync((int) id);
+                dbModel = await _mealWeekRepo.GetByIdAsync((int)id);
                 dbModel.DeliveryDate = model.DeliveryDate;
                 dbModel.MealWeekStatus = model.MealWeekStatus;
-                
+
                 await _mealWeekRepo.UpdateAsync(dbModel);
             }
 
-            return RedirectToRoute("WeekEdit", new {id = dbModel.Id});
+            return RedirectToRoute("WeekEdit", new { id = dbModel.Id });
         }
 
         [HttpPost("[action]/{id:int}")]
         public async Task<IActionResult> GenerateMeals(int? id)
         {
             if (id is 0 or null) return BadRequest();
-            
-            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int) id);
+
+            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int)id);
             if (week == null) return BadRequest();
 
             var meals = await _mealService.GetMealsForMealWeek(week);
@@ -141,7 +144,7 @@ namespace FoodPicker.Web.Controllers
                 await _mealVoteService.ProcessAutoVotes(week);
             }
 
-            return RedirectToRoute("WeekEdit", new {id});
+            return RedirectToRoute("WeekEdit", new { id });
         }
 
         public class MealVoteViewModel
@@ -149,20 +152,22 @@ namespace FoodPicker.Web.Controllers
             public MealWeek MealWeek { get; set; }
             public List<MealVote> UserMealVotes { get; set; }
             public ILookup<int, MealRating> PreviousRatings { get; set; }
+
             [MaxLength(1000)]
             [Display(Name = "User Comment")]
             public string WeekUserComment { get; set; }
         }
+
         [HttpGet("Vote/{id:int}")]
         public async Task<IActionResult> Vote(int? id)
         {
             if (id is null or 0) return BadRequest();
-            
-            var model = await _mealWeekRepo.GetByIdWithMealsAsync((int) id);
+
+            var model = await _mealWeekRepo.GetByIdWithMealsAsync((int)id);
             var weekVotes = await _mealVoteRepo.GetUserVotesForWeekAsync(model, _userManager.GetUserId(User));
-            
+
             var ratingLookup = _mealRatingRepo.GetPreviousRatingsForMeals(model.Meals);
-            
+
             return View(new MealVoteViewModel
             {
                 MealWeek = model,
@@ -171,16 +176,17 @@ namespace FoodPicker.Web.Controllers
                     MealId = x.Id
                 }).ToList(),
                 PreviousRatings = ratingLookup,
-                WeekUserComment = (await _commentRepository.GetCommentForWeekAndUser((int) id, _userManager.GetUserId(User)))?.Comment
+                WeekUserComment =
+                    (await _commentRepository.GetCommentForWeekAndUser((int)id, _userManager.GetUserId(User)))?.Comment
             });
         }
-        
+
         [HttpPost("Vote/{id:int}")]
         public async Task<IActionResult> Vote(int? id, [FromForm] MealVoteViewModel model)
         {
             if (id == null) return NotFound();
             var userId = _userManager.GetUserId(User);
-            var dbComment = await _commentRepository.GetCommentForWeekAndUser((int) id, userId);
+            var dbComment = await _commentRepository.GetCommentForWeekAndUser((int)id, userId);
             if (dbComment == null)
             {
                 if (!string.IsNullOrEmpty(model.WeekUserComment))
@@ -199,15 +205,15 @@ namespace FoodPicker.Web.Controllers
                 dbComment.Comment = model.WeekUserComment ?? "";
                 await _commentRepository.UpdateAsync(dbComment);
             }
-            
+
             foreach (var dbVote in model.UserMealVotes.Select(vote => new MealVote
-            {
-                Id = vote.Id,
-                MealId = vote.MealId,
-                VoteOptionId = vote.VoteOptionId,
-                Comment = vote.Comment,
-                UserId = _userManager.GetUserId(User)
-            }))
+                     {
+                         Id = vote.Id,
+                         MealId = vote.MealId,
+                         VoteOptionId = vote.VoteOptionId,
+                         Comment = vote.Comment,
+                         UserId = _userManager.GetUserId(User)
+                     }))
             {
                 if (dbVote.Id == 0)
                 {
@@ -241,35 +247,37 @@ namespace FoodPicker.Web.Controllers
             public List<MealVote> Votes { get; set; }
             public double Score { get; set; }
         }
+
         [HttpGet("Results/{weekId:int}")]
         public async Task<IActionResult> ViewResults(int? weekId)
         {
             if (weekId is 0 or null) return NotFound();
-            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int) weekId);
+            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int)weekId);
             if (week == null) return NotFound();
 
             var model = new ViewResultsViewModel
             {
                 Week = week,
-                ParticipatingUsers = await _userManager.Users.Where(u => u.IsActive).ToListAsync(),
+                ParticipatingUsers = await _userManager.Users.Where(u => u.IsActive).OrderBy(u => u.Name).ToListAsync(),
                 IsEditable = week.CanVote,
-                UserComments = await _commentRepository.GetCommentsForWeek((int) weekId)
+                UserComments = await _commentRepository.GetCommentsForWeek((int)weekId)
             };
             var meals = week.Meals;
-            
+
             var voteResults = await _mealVoteService.GetVoteResultsForWeekAsync(week);
             foreach (var meal in meals)
             {
                 model.MealsSelected[meal.Id] = meal.SelectedForOrder ?? false;
                 var voteResult = voteResults[meal.Id];
-                
+
                 model.MealResults.Add(new MealResult
                 {
                     Meal = meal,
                     Votes = voteResult.Votes,
-                    Score = voteResult.Score 
+                    Score = voteResult.Score
                 });
             }
+
             return View(model);
         }
 
@@ -277,7 +285,7 @@ namespace FoodPicker.Web.Controllers
         public async Task<IActionResult> ViewResults(int? weekId, [FromForm] ViewResultsViewModel model, string action)
         {
             if (weekId is 0 or null) return BadRequest();
-            
+
             foreach (var (key, value) in model.MealsSelected)
             {
                 var dbModel = await _mealRepo.GetByIdAsync(key);
@@ -288,12 +296,12 @@ namespace FoodPicker.Web.Controllers
 
             if (action == "saveLock")
             {
-                var week = await _mealWeekRepo.GetByIdAsync((int) weekId);
+                var week = await _mealWeekRepo.GetByIdAsync((int)weekId);
                 week.MealWeekStatus = MealWeekStatus.Past;
                 await _mealWeekRepo.UpdateAsync(week);
             }
-            
-            return RedirectToAction("ViewResults", new {weekId});
+
+            return RedirectToAction("ViewResults", new { weekId });
         }
 
         public class MealDetailsViewModel
@@ -306,7 +314,7 @@ namespace FoodPicker.Web.Controllers
         public async Task<ActionResult> MealDetailsModal(int? mealId)
         {
             if (mealId is 0 or null) return BadRequest();
-            var meal = await _mealRepo.GetByIdAsync((int) mealId);
+            var meal = await _mealRepo.GetByIdAsync((int)mealId);
             if (meal == null) return BadRequest();
 
             var previousRatings = _mealRatingRepo.GetPreviousRatingsForMeal(meal);
@@ -314,7 +322,7 @@ namespace FoodPicker.Web.Controllers
             return PartialView("_MealDetailsModal", new MealDetailsViewModel
             {
                 Meal = meal,
-                PreviousRatings = previousRatings 
+                PreviousRatings = previousRatings
             });
         }
 
@@ -324,9 +332,9 @@ namespace FoodPicker.Web.Controllers
         {
             if (weekId is 0 or null) return BadRequest();
 
-            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int) weekId);
+            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int)weekId);
             if (week == null) return BadRequest();
-            
+
             var meals = week.Meals;
             var mealIds = meals.Select(x => x.Id).ToList();
 
@@ -335,7 +343,7 @@ namespace FoodPicker.Web.Controllers
 
             var ratings = await _mealRatingRepo.ListAsync(x => mealIds.Contains(x.MealId));
             await _mealRatingRepo.DeleteRangeAsync(ratings);
-            
+
             await _mealRepo.DeleteRangeAsync(meals);
             await _mealWeekRepo.DeleteAsync(week);
 

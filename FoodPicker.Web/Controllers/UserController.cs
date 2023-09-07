@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using FoodPicker.Web.Enums;
 using FoodPicker.Infrastructure.Models;
@@ -23,7 +24,7 @@ namespace FoodPicker.Web.Controllers
         
         public async Task<IActionResult> Index()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.Users.OrderBy(u => u.Name).ToListAsync();
             return View("List", users);
         }
 
