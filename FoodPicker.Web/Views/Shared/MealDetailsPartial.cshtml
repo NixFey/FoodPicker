@@ -1,0 +1,49 @@
+@using FoodPicker.Infrastructure.Services
+@model FoodPicker.Web.Controllers.WeekController.MealDetailsViewModel
+@inject MealService MealService
+
+@{
+    var meal = Model.Meal;
+    var previousRatings = Model.PreviousRatings;
+}
+<div class="row g-0 h-100 ctr-container meal-details">
+    <div class="d-flex flex-column ctr-flex-row">
+        <div class="ctr-col-md-4 ctr-h-100"><img src="@meal.ImageUrl" class="img-fluid" alt="Meal Image"></div>
+        <div class="ctr-col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">@meal.Name</h5>
+                <p class="card-text" style="white-space: break-spaces;">@meal.Description</p>
+                
+                @if (!string.IsNullOrEmpty(meal.Tags))
+                {
+                    <p>
+                        @foreach (var tag in meal.Tags.Split(';'))
+                        {
+                            <span class="badge rounded-pill bg-primary">@tag</span>
+                        }
+                    </p>
+                }
+            
+                @{
+                    var mealRatings = previousRatings as MealRating[] ?? previousRatings.ToArray();
+                }
+                @if (mealRatings.Any())
+                {
+                    <p class="m-0">
+                        <button type="button" class="btn btn-link p-0" data-bs-toggle="popover" data-bs-placement="top"
+                                data-bs-html="true"
+                                @* Bootstrap is doing something weird so it needs to be double-encoded even though once should be enough? *@
+                                data-bs-content="@string.Join("<br />", mealRatings.Select(x => HtmlEncoder.Encode($"{x.Rating}/{MealRating.MaxRating}: {x.RatingComment}")))">
+                            Previous Ratings
+                        </button>
+                    </p>
+                }
+                
+                @if (!string.IsNullOrWhiteSpace(meal.Url))
+                {
+                    <p class="m-0"><a href="@meal.Url" target="_blank">View on @MealService.MealServiceName</a></p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

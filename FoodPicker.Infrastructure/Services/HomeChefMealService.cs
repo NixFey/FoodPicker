@@ -87,7 +87,7 @@ namespace FoodPicker.Infrastructure.Services
                     Name = mealElement.GetProperty("title").GetString(),
                     Description = description,
                     ImageUrl = mealElement.GetProperty("photo").GetString(),
-                    Url = mealElement.GetProperty("url").GetString(),
+                    Url = mealElement.GetProperty("url").GetString()?.Replace("cs.homechef.com", "homechef.com"),
                     Tags = string.Join(';', tags.Where(t => !string.IsNullOrEmpty(t)))
                 };
                 

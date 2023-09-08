@@ -114,6 +114,10 @@ else
         
         if (fetchResult.ok) {
             modalContent.innerHTML = await fetchResult.text();
+            var popoverTriggerList = [].slice.call(modalContent.querySelectorAll('[data-bs-toggle="popover"]'));
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+              return new bootstrap.Popover(popoverTriggerEl)
+            });
         } else {
             modalContent.innerHTML = `<p>Unable to fetch meal info: ${fetchResult.statusText}</p>`; 
         }

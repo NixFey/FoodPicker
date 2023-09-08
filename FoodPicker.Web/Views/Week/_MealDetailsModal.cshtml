@@ -1,29 +1,5 @@
 @using FoodPicker.Infrastructure.Services
 @model FoodPicker.Web.Controllers.WeekController.MealDetailsViewModel
-@inject MealService MealService;
+@inject MealService MealService
 
-<img src="@Model.Meal.ImageUrl" alt="Photo of @Model.Meal.Name" style="width: 100%" />
-<h4>@Model.Meal.Name</h4>
-<p style="white-space: break-spaces;">@Model.Meal.Description</p>
-@if (!string.IsNullOrWhiteSpace(Model.Meal.Url))
-{
-    <p><a href="@Model.Meal.Url">View on @MealService.MealServiceName</a></p>
-}
-@if (!string.IsNullOrEmpty(Model.Meal.Tags))
-{
-    foreach (var tag in Model.Meal.Tags.Split(';'))
-    {
-        <span class="badge rounded-pill bg-primary">@tag</span>
-    }
-}
-
-@if (Model.PreviousRatings.Any())
-{
-    <h5>Previous Ratings</h5>
-    <ul>
-        @foreach (var rating in Model.PreviousRatings)
-        {
-            <li>@rating.Rating/@MealRating.MaxRating: @rating.RatingComment</li>
-        }
-    </ul>
-}
+@await Html.PartialAsync("MealDetailsPartial", Model)

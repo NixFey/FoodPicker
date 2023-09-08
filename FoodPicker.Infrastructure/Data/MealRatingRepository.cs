@@ -44,8 +44,12 @@ namespace FoodPicker.Infrastructure.Data
 
         public List<MealRating> GetPreviousRatingsForMeal(Meal meal)
         {
-            return _db.MealRatings.Include(x => x.Meal)
-                .Where(x => meal.Name == x.Meal.Name).ToList();
+            return _db.MealRatings.Where(x => meal.Name == x.Meal.Name).ToList();
+        }
+        
+        public Task<List<MealRating>> GetPreviousRatingsForMealAsync(Meal meal)
+        {
+            return _db.MealRatings.Where(x => meal.Name == x.Meal.Name).ToListAsync();
         }
 
         public async Task<List<MealVote>> GetUserVotesForWeekAsync(MealWeek week, string userId, CancellationToken cancellationToken = default)

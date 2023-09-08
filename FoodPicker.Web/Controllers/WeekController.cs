@@ -307,7 +307,7 @@ namespace FoodPicker.Web.Controllers
         public class MealDetailsViewModel
         {
             public Meal Meal { get; set; }
-            public List<MealRating> PreviousRatings { get; set; }
+            public IEnumerable<MealRating> PreviousRatings { get; set; }
         }
 
         [HttpGet("MealDetailsModal/{mealId:int}")]

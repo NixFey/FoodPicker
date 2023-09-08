@@ -1,3 +1,4 @@
+@using FoodPicker.Web.Controllers
 @model MealRating
 
 @{
@@ -9,17 +10,23 @@
     <div class="mb-3">
         <div class="col">
             <div class="card">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="@Model.Meal.ImageUrl" class="img-fluid rounded-start" alt="Meal Image">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">@Model.Meal.Name</h5>
-                            <p class="card-text">@Model.Meal.Description</p>
-                        </div>
-                    </div>
-                </div>
+                @* <div class="row g-0"> *@
+                @*     <div class="col-md-4"> *@
+                @*         <img src="@Model.Meal.ImageUrl" class="img-fluid rounded-start" alt="Meal Image"> *@
+                @*     </div> *@
+                @*     <div class="col-md-8"> *@
+                @*         <div class="card-body"> *@
+                @*             <h5 class="card-title">@Model.Meal.Name</h5> *@
+                @*             <p class="card-text">@Model.Meal.Description</p> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+                
+                @await Html.PartialAsync("MealDetailsPartial", new WeekController.MealDetailsViewModel()
+                       {
+                           Meal = Model.Meal,
+                           PreviousRatings = Enumerable.Empty<MealRating>()
+                       })
             </div>
         </div>
     </div>

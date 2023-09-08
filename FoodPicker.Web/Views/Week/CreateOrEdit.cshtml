@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Authorization
+@using FoodPicker.Web.Controllers
 @model MealWeek
 @inject IAuthorizationService _authorizationService;
 
@@ -38,19 +39,12 @@
         @foreach (var meal in Model.Meals)
         {
             <div class="col">
-                <div class="card">
-                    <img src="@meal.ImageUrl" class="card-img-top" alt="Meal Image">
-                    <div class="card-body">
-                        <h5 class="card-title">@meal.Name</h5>
-                        <p class="card-text" style="white-space: break-spaces;">@meal.Description</p>
-                        @if (!string.IsNullOrEmpty(meal.Tags))
-                        {
-                            foreach (var tag in meal.Tags.Split(';'))
-                            {
-                                <span class="badge rounded-pill bg-primary">@tag</span>
-                            }
-                        }
-                    </div>
+                <div class="card h-100">
+                    @await Html.PartialAsync("MealDetailsPartial", new WeekController.MealDetailsViewModel()
+                           {
+                               Meal = meal,
+                               PreviousRatings = Enumerable.Empty<MealRating>()
+                           })
                 </div>
             </div>
         }

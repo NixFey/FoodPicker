@@ -1,4 +1,5 @@
 @using FoodPicker.Infrastructure.Services
+@using FoodPicker.Web.Controllers
 @model FoodPicker.Web.Controllers.WeekController.MealVoteViewModel
 @inject MealService _mealService;
 @inject MealVoteService _voteService;
@@ -26,29 +27,11 @@
                 var meal = Model.MealWeek.Meals.First(x => x.Id == vote.MealId);
                 <div class="col">
                     <div class="card h-100">
-                        <img src="@meal.ImageUrl" class="card-img-top" alt="Meal Image">
-                        <div class="card-body">
-                            <h5 class="card-title">@meal.Name</h5>
-                            <p class="card-text" style="white-space: break-spaces;">@meal.Description</p>
-                            @if (!string.IsNullOrWhiteSpace(meal.Url))
-                            {
-                                <p><a href="@meal.Url">View on @_mealService.MealServiceName</a></p>
-                            }
-                            @if (!string.IsNullOrEmpty(meal.Tags))
-                            {
-                                foreach (var tag in meal.Tags.Split(';'))
-                                {
-                                    <span class="badge rounded-pill bg-primary">@tag</span>
-                                }
-                            }
-                            @if (Model.PreviousRatings.Contains(meal.Id))
-                            {
-                                <button type="button" class="btn btn-link" data-bs-toggle="popover" data-bs-placement="top"
-                                        data-bs-html="true"
-                                        @* Bootstrap is doing something weird so it needs to be double-encoded even though once should be enough? *@
-                                        data-bs-content="@(string.Join("<br />", Model.PreviousRatings[meal.Id].Select(x => HtmlEncoder.Encode($"{x.Rating}/{MealRating.MaxRating}: {x.RatingComment}"))))">Previous Ratings</button>
-                            }
-                        </div>
+                        @await Html.PartialAsync("MealDetailsPartial", new WeekController.MealDetailsViewModel()
+                               {
+                                   Meal = meal,
+                                   PreviousRatings = Model.PreviousRatings[meal.Id]
+                               })
                         <div class="card-footer">
                             <input type="hidden" asp-for="@Model.UserMealVotes[i].MealId" value="@meal.Id"/>
                             <input type="hidden" asp-for="@Model.UserMealVotes[i].Id" value="@vote.Id"/>
