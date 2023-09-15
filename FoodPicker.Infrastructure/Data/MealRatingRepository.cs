@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -38,8 +39,9 @@ namespace FoodPicker.Infrastructure.Data
         {
             var ratings = _db.MealRatings.Include(x => x.Meal)
                 .Where(x => meals.Select(y => y.Name).Contains(x.Meal.Name)).AsEnumerable();
-            
-            return ratings.ToLookup(x => meals.First(y => y.Name == x.Meal.Name).Id);
+
+            return ratings.ToLookup(x =>
+                meals.First(y => string.Equals(y.Name, x.Meal.Name, StringComparison.InvariantCultureIgnoreCase)).Id);
         }
 
         public List<MealRating> GetPreviousRatingsForMeal(Meal meal)

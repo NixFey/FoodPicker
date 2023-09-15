@@ -19,6 +19,11 @@ namespace FoodPicker.Infrastructure.Models
         public string ImageUrl { get; set; }
         public string Url { get; set; }
         
+        /// <summary>
+        /// An identifier specific to the meal service which groups together similar meals. Not supported by all services.
+        /// </summary>
+        public string MealConceptId { get; set; }
+        
         public bool? SelectedForOrder { get; set; }
 
         public List<MealVote> MealVotes { get; set; }
