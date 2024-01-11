@@ -41,7 +41,7 @@ namespace FoodPicker.Infrastructure.Data
                 .Where(x => meals.Select(y => y.Name).Contains(x.Meal.Name)).AsEnumerable();
 
             return ratings.ToLookup(x =>
-                meals.First(y => string.Equals(y.Name, x.Meal.Name, StringComparison.InvariantCultureIgnoreCase)).Id);
+                meals.First(y => string.Equals(y.Name.Trim(), x.Meal.Name.Trim(), StringComparison.InvariantCultureIgnoreCase)).Id);
         }
 
         public List<MealRating> GetPreviousRatingsForMeal(Meal meal)
