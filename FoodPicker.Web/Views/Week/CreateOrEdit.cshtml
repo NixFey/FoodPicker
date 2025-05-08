@@ -28,13 +28,14 @@
         <form asp-action="GenerateMeals" asp-route-id="@Model.Id" method="post" class="mb-3 d-inline">
             <button type="submit" class="btn btn-secondary">Generate Meals</button>
         </form>
-        <form asp-action="SkipWeek" asp-route-id="@Model.Id" method="post" class="mb-3 d-inline">
-            <button type="submit" class="btn btn-secondary">Skip Week</button>
-        </form>
     }
     
+    <form asp-action="SkipWeek" asp-route-id="@Model.Id" method="post" class="mb-3 d-inline">
+        <button type="submit" class="btn btn-secondary">Skip Week</button>
+    </form>
+    
     <internal-admin>
-        <button type="button" class="btn btn-danger" id="delete-week-button">Delete Week</button>
+        <button type="button" class="btn btn-danger d-inline" id="delete-week-button">Delete Week</button>
     </internal-admin>
 
     <hr />
