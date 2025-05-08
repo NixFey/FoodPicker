@@ -92,12 +92,12 @@ namespace FoodPicker.Web.Controllers
 
             try
             {
-                if (skip) await _mealService.SkipWeek(week);
                 var mealsForNextDelivery = await _mealService.GetMealsForMealWeek(week);
                 if (mealsForNextDelivery.Count == 0)
                     throw new ApplicationException("No meals reported from meal service");
 
                 week.Meals = mealsForNextDelivery;
+                if (skip) await _mealService.SkipWeek(week);
             }
             catch (Exception e)
             {
