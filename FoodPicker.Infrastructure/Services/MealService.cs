@@ -14,6 +14,7 @@ namespace FoodPicker.Infrastructure.Services
         public abstract string GetMenuUrlForMealWeek(MealWeek week);
         public abstract Task<List<Meal>> GetMealsForMealWeek(MealWeek week);
         public abstract DateTime GetUtcOrderDeadlineForDeliveryDate(DateTime deliveryDate);
+        public abstract Task<bool> SkipWeek(MealWeek week);
 
         private readonly TimeZoneInfo _localTz;
         protected MealService(IConfiguration configuration)

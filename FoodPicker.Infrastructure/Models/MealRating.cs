@@ -12,7 +12,7 @@ namespace FoodPicker.Infrastructure.Models
         public Meal Meal { get; set; }
         [Range(1,MaxRating)]
         [Display(Name = "Rating")]
-        public int Rating { get; set; }
+        public int? Rating { get; set; }
         [Display(Name = "Comment")]
         public string RatingComment { get; set; }
         public DateTime RatingTime { get; set; }

@@ -25,8 +25,11 @@
 {
     @if (Model.MealWeekStatus == MealWeekStatus.Future)
     {
-        <form asp-action="GenerateMeals" asp-route-id="@Model.Id" method="post" class="mb-3">
+        <form asp-action="GenerateMeals" asp-route-id="@Model.Id" method="post" class="mb-3 d-inline">
             <button type="submit" class="btn btn-secondary">Generate Meals</button>
+        </form>
+        <form asp-action="SkipWeek" asp-route-id="@Model.Id" method="post" class="mb-3 d-inline">
+            <button type="submit" class="btn btn-secondary">Skip Week</button>
         </form>
     }
     

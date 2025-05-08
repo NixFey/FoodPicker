@@ -147,6 +147,18 @@ namespace FoodPicker.Web.Controllers
             return RedirectToRoute("WeekEdit", new { id });
         }
 
+        public async Task<IActionResult> SkipWeek(int? id)
+        {
+            if (id is 0 or null) return BadRequest();
+
+            var week = await _mealWeekRepo.GetByIdWithMealsAsync((int)id);
+            if (week == null || week.MealWeekStatus == MealWeekStatus.Past) return BadRequest();
+
+            await _mealService.SkipWeek(week);
+
+            return RedirectToRoute("WeekEdit", new { id });
+        }
+
         public class MealVoteViewModel
         {
             public MealWeek MealWeek { get; set; }

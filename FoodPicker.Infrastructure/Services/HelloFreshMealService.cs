@@ -106,5 +106,10 @@ namespace FoodPicker.Infrastructure.Services
             return refreshContent?.RootElement.GetProperty("access_token").GetString();
 
         }
+
+        public override Task<bool> SkipWeek(MealWeek week)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

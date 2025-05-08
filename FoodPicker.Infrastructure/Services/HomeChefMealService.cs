@@ -115,5 +115,24 @@ namespace FoodPicker.Infrastructure.Services
             );
             return TimeZoneInfo.ConvertTimeToUtc(deadline, centralTime);
         }
+
+        public override async Task<bool> SkipWeek(MealWeek week)
+        {
+            var token = (await _configRepo.GetByCodeOrNull("HomeChefAccessToken")).Value;
+            if (string.IsNullOrEmpty(token)) throw new ApplicationException("Access token not provided");
+            
+            var deliveryDate = week.DeliveryDate;
+            var slugDate = StartOfWeek(deliveryDate, DayOfWeek.Monday);
+            var skipUrl = "https://www.homechef.com/api/v2/weekly_baskets/" + slugDate.ToString("dd-MMM-yyyy").ToLower() + "/skips";
+            
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
+            var skipResponse = await httpClient.PostAsync(skipUrl, JsonContent.Create(new {}));
+
+            if (skipResponse == null) throw new ApplicationException("Unable to get meals from service provider");
+
+            return true;
+        }
     }
 }
