@@ -78,7 +78,7 @@ namespace FoodPicker.Infrastructure.Services
                     }
                 }
 
-                var tags = new List<string> { mealElement.GetProperty("primary_label").GetString() };
+                var tags = new List<string> { mealElement.GetProperty("primary_label_data").GetProperty("label_text").GetString() };
                 tags.AddRange(mealElement.GetProperty("tags").EnumerateArray().Select(t => t.GetString().Transform(To.TitleCase)));
     
                 var meal = new Meal()
